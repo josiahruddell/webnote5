@@ -1,0 +1,115 @@
+/* special thanks to http://www.tutorialshock.com/tutorials/fancy-css3-boxes/ */
+/* This is the selector of the fourth box, here's where we establish the measures, background colors, borders and shadows */
+.box4{
+	margin: 20px auto;
+	min-height: 150px;
+	width: 98%;
+	position:relative;
+	background: #fff;
+	background: -webkit-gradient(linear, 0% 20%, 0% 100%, from(#fff), to(#fff), color-stop(.2, #f2f2f2));
+	background: -moz-linear-gradient(0% 0% 360deg, #fff, #f2f2f2 20%, #fff );
+	border: 1px solid #ccc;
+	-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* This is the top right shadow*/
+.box4:before{
+	content: '';
+	width: 50px;
+	height: 50px;
+	top:0; right:0;
+	position:absolute;
+	z-index: -1;
+	-webkit-box-shadow: 10px -10px 8px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: 10px -10px 8px rgba(0, 0, 0, 0.2);
+	box-shadow: 10px -10px 8px rgba(0, 0, 0, 0.2);
+	-webkit-transform: rotate(2deg)
+						translate(-14px,20px)
+						skew(-20deg);
+	-moz-transform: rotate(2deg)
+						translate(-14px,20px)
+						skew(-20deg);
+		-o-transform: rotate(2deg)
+						translate(-14px,20px)
+						skew(-20deg);
+				transform: rotate(2deg)
+						translate(-14px,20px)
+						skew(-20deg);
+}
+
+/* This is the top left shadow*/
+.box4:after{
+	content: '';
+	width: 50px;
+	height: 50px;
+	top:0; left:0;
+	position:absolute;
+	z-index:-1;
+	display: inline-block;
+	-webkit-box-shadow: -10px -10px 10px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: -10px -10px 10px rgba(0, 0, 0, 0.2);
+	box-shadow: -10px -10px 10px rgba(0, 0, 0, 0.2);
+	-webkit-transform: rotate(2deg)
+						translate(12px,25px)
+					   	skew(20deg);
+	-moz-transform: rotate(2deg)
+						translate(12px,25px)
+					   	skew(20deg);
+	-o-transform: rotate(2deg)
+						translate(12px,25px)
+					   	skew(20deg);
+	transform: rotate(2deg)
+						translate(12px,25px)
+					   	skew(20deg);
+}
+
+/* This is the bottom right shadow */
+.shr_box4{
+	width: 100px;
+	height: 100px;
+	bottom:0; right:0;
+	position:absolute;
+	z-index: -1;
+	-webkit-box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+	box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
+	-webkit-transform: rotate(0deg)
+						translate(-20px,-15px)
+					   skew(20deg);
+	-moz-transform: rotate(0deg)
+						translate(-20px,-15px)
+					   skew(20deg);
+	-o-transform: rotate(0deg)
+						translate(-20px,-15px)
+					   skew(20deg);
+		transform: rotate(0deg)
+						translate(-20px,-15px)
+					   skew(20deg);
+}
+
+/* This is the bottom left shadow */
+.shl_box4{
+	content: '';
+	width: 100px;
+	height: 100px;
+	bottom:0; left:0;
+	position:absolute;
+	z-index: -1;
+	-webkit-box-shadow: -10px 10px 10px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: -10px 10px 10px rgba(0, 0, 0, 0.2);
+	box-shadow: -10px 10px 10px rgba(0, 0, 0, 0.2);
+	-webkit-transform: rotate(0deg)
+						translate(20px,-15px)
+					   skew(-20deg);
+	-moz-transform: rotate(0deg)
+						translate(20px,-15px)
+					   skew(-20deg);
+	-o-transform: rotate(0deg)
+						translate(20px,-15px)
+					   skew(-20deg);
+	transform: rotate(0deg)
+						translate(20px,-15px)
+					   skew(-20deg);
+}

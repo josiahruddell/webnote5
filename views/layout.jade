@@ -1,0 +1,58 @@
+!!!5
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/box.css')
+    script(src="/javascripts/lib/socket.io/socket.io.js")
+    script(src='/javascripts/lib/jquery-1.4.2.min.js')
+    script(src="/javascripts/lib/jquery-ui-1.8rc3.custom.min.js")
+    script(src="/javascripts/lib/Plugins/jquery.tmpl.min.js")
+    script(src="/javascripts/main.js")
+  body
+    section#nav.boxshadow
+      .contents
+        ul
+          li.f
+            a(href="/notes/month") JULY 2011
+    section#bar
+      .contents
+        nav
+          ul
+            li.f
+              a(href="#", data-target="#note5-menu", data-group="note5", style="font-weight:bold") Webnote5  
+            li
+              a(href="#", data-target="#file-menu", data-group="file") File
+            li
+              a(href="#", data-target="#edit-menu", data-group="edit") Edit
+            li
+              a(href="#", data-target="#window-menu", data-group="window") Window
+        a.icon.search(href="#", data-target="#search", data-group="search", data-position="right")    
+    section#main
+      .contents
+        .box4
+          div.page!=body
+          .shl_box4
+          .shr_box4
+    
+    ul#file-menu(class="menu-list", style="display:none")
+      li
+        a(href="/Notes/new") New
+      li
+        a(href="#") Save
+    ul#edit-menu(class="menu-list", style="display:none")
+      li
+        a(href="#") Copy
+      li
+        a(href="#") Paste
+    ul#window-menu(class="menu-list", style="display:none")
+      li
+        a(href="#") Navigator
+    ul#note5-menu(class="menu-list", style="display:none")
+      li
+        a(href="#") About Webnote5
+      li.hr
+      li
+        a(href="#") Preferences...
+    #search Search
+      input(name="search")
