@@ -1,3 +1,4 @@
+[Screenshot1](https://github.com/josiahruddell/webnote5/blob/master/public/images/screenshots/new.png)
 # DOMAIN NAME SEARCH
 
 # WANTED
