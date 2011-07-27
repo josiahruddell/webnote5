@@ -1,7 +1,6 @@
 /**
  * Module dependencies.
  */
-
 var express = require('express')
     , fs = require('fs')
     , io = require('socket.io')
@@ -98,7 +97,7 @@ app.get('/new', function(req, res) {
 
 app.listen(port);
 
-var io = io.listen(app);
+io = io.listen(app);
 
 io.on('connection', function(client){
     client.on('message', function(m){

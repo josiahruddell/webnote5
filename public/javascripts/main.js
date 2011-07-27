@@ -21,11 +21,12 @@ $(function(){
 	});
 
 	// establish connection
-	var socket = this.socket = new io.Socket(this.location.hostname);
+	// new socket.io WOOT!
+	var socket = this.socket = io.connect();
+	
 	socket.on('connect', function(){
 		
 	});
-	socket.connect();
 });
 
 $.fn.menuItem = (function($, win){
