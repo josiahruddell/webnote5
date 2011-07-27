@@ -6,6 +6,9 @@
 input:focus {
   outline: none;
 }
+[contenteditable="true"]:focus {
+  outline: none;
+}
 html {
   background: #999 url("/images/backgrounds/smallripples.png") 0 0;
 }
