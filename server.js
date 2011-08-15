@@ -100,18 +100,17 @@ app.listen(port);
 io = io.listen(app);
 
 io.on('connection', function(client){
-    client.on('message', function(m){
-        switch(m.action){
-            case 'save':
-                repo.save(m.id, m.data);
-            break;
-            case 'load':
-                var data = repo.get(m.id);
-                client.send(data);
+    
+    client.on('preferences', function(m){
+        
+    });
 
-            break;
-
-        }
+    client.on('save', function(m){
+        repo.save(m.id, m.data);
+    });
+    client.on('load', function(m){
+        var data = repo.get(m.id);
+        client.send(data);
     });
 });
 

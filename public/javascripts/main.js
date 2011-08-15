@@ -1,4 +1,6 @@
 $(function(){
+	$('#bodytext').oneEdit();
+
 	// format main width
 	var targets = $('#main'), nav = $('#nav');
 	$(window).bind('resize', function(){
