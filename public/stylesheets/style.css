@@ -10,7 +10,8 @@ input:focus {
   outline: none;
 }
 html {
-  background: #999 url("/images/backgrounds/smallripples.png") 0 0;
+  background: #999 url("/images/backgrounds/Pinstripe.jpg") 0 0;
+  background-attachment: fixed;
 }
 body {
   font: 77% "Lucida Grande", "Trebuchet MS", Georgia, serif;
@@ -195,6 +196,7 @@ section * {
 }
 .page {
   margin: 0 15px 15px;
+  font-size: 107%;
 }
 .date {
   color: #b0b0b0;
@@ -232,4 +234,10 @@ section * {
   padding: 2px;
   border-left: 1px solid #e1e1e1;
   cursor: default !important;
+}
+.page ::selection,
+.page ::-moz-selection {
+  background: #a8d1ff;
+  color: #000;
+  outline: #0f0 dotted thick !important;
 }

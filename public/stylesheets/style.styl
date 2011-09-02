@@ -11,9 +11,8 @@ input:focus
   outline none
 
 html
-  background #999 url(/images/backgrounds/smallripples.png) 0 0
-  //position fixed
-  //background-size 100%
+  background #999 url(/images/backgrounds/Pinstripe.jpg) 0 0
+  background-attachment fixed
 
 body
   font 77% "Lucida Grande", "Trebuchet MS", Georgia, serif
@@ -217,6 +216,8 @@ section *
 // PAGE STYLES
 .page
   margin 0 15px 15px
+  font-size: 107%
+
 .date 
   color #b0b0b0
   position absolute
@@ -252,3 +253,14 @@ section *
   padding 2px
   border-left 1px solid #E1E1E1
   cursor default !important
+
+.page ::selection, .page ::-moz-selection
+  background #a8d1ff
+  color #222
+
+//.page *
+//  display inline
+
+//.page *:hover
+//  outline #ccc dotted 1px
+

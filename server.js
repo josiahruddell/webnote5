@@ -1,25 +1,31 @@
 /**
  * Module dependencies.
  */
+
 var express = require('express')
-    , fs = require('fs')
     , io = require('socket.io')
-    //, RedisStore = require('connect-redis')(express)
+    // , RedisStore = require('connect-redis')
     , csrf = require('express-csrf')
-    , couchdb = require('couchdb')
-    , repo = require('./lib/Repository')
+    , Model = require('./lib/domain/models')
     , port = process.env.C9_PORT || 3001;
+
 
 var app = module.exports = express.createServer();
 
 // View Helpers
 app.dynamicHelpers({
-  csrf: csrf.token,
+  csrf: csrf.token
+});
+
+app.dynamicHelpers({
   flash: function(req) {
     var flash;
     flash = req.flash();
     return flash;
-  },
+  }
+});
+
+app.dynamicHelpers({
   current_user: function(req) {
     return req.session.user;
   }
@@ -32,10 +38,12 @@ app.configure(function() {
     app.set('view engine', 'jade');
     app.use(express.cookieParser());
     app.use(express.bodyParser());
-    app.use(express.session({ 
-        //store: new RedisStore, //({maxAge: 24 * 60 * 60 * 1000 }),
-        secret: 'super secret'
-    }));
+    app.use(express.session({ secret: 'super note secret' }));
+    // app.use(express.session({
+    //   store: new RedisStore({
+    //     maxAge: 24 * 60 * 60 * 1000
+    //   })
+    // }));
     app.use(csrf.check());
     app.use(express.methodOverride());
     app.use(require('stylus').middleware({
@@ -59,7 +67,6 @@ app.configure('production', function() {
 // dynamic helpers
 // action filter
 // Routes
-// TODO: move routes out of server
 app.get('/', function(req, res) {
     if(req.session.usr)
         res.render('index', {
@@ -74,7 +81,6 @@ app.get('/category/:name', function(req, res) {
 });
 
 app.get('/new', function(req, res) {
-    // TODO: move date helper to date utils
     var d = new Date(),
         days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
         months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -99,18 +105,13 @@ app.listen(port);
 
 io = io.listen(app);
 
-io.on('connection', function(client){
-    
-    client.on('preferences', function(m){
-        
-    });
-
-    client.on('save', function(m){
-        repo.save(m.id, m.data);
-    });
-    client.on('load', function(m){
-        var data = repo.get(m.id);
-        client.send(data);
+io.sockets.on('connection', function(socket){
+    socket.on('addnote', function(message){
+        //console.log('add note callback says: ', message);
+        var note = Model('Note').create(message);
+        note.save(function(err, savedNote){
+            socket.emit('notesaved', savedNote);
+        });
     });
 });
 

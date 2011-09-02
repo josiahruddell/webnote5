@@ -1,6 +1,5 @@
-(function($, root){
-
-    var ToolbarItem = function(el, opts){
+define(['jquery', 'lib/jquery/plugins/jquery.textselect'], function($){	
+	var ToolbarItem = function(el, opts){
         this.el = el;
         this.opts = opts;
         this.init();
@@ -33,7 +32,7 @@
     var OneEdit = function(el, opts){
         this.el = $(el);
         this.doc = $(document);
-        this.opts = $.extend({}, $.fn.oneEdit.defaults, opts); 
+        this.opts = $.extend({}, defaults, opts); 
         this.init();
     }
 
@@ -149,14 +148,8 @@
         }
     }
 
-    $.fn.oneEdit = function(options){
-        return this.each(function(){
-            $(this).data('OneEdit', new OneEdit(this, options));
-        });
-    }
-
     // TODO: make class for toolbar item so this association is clean
-    $.fn.oneEdit.defaults = {
+    var defaults = {
         toolbar: {
             bold : {
                 alt: 'Bold',
@@ -194,5 +187,5 @@
         }
     }
 
-})(jQuery, this)
-    ;
+    return OneEdit;
+});
