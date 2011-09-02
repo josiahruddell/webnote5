@@ -46,10 +46,10 @@ require(['jquery', 'class/MenuItem/MenuItem', 'lib/socket.io/socket.io.min', 'ut
         // data
         var socket = io.connect();
         
-        socket.emit('addnote', { 
-         data: '<b> this is a test to disprove Johnny skepticism. </b>',
-         title: 'johnny sucks'
-        });
+        // socket.emit('addnote', { 
+        //  data: '<b> this is a test note body. </b>',
+        //  title: 'New Note'
+        // });
 
         socket.on('notesaved', function(note){
             console.log(note);
