@@ -1,6 +1,7 @@
 {
   "author": "Josiah Ruddell <jruddell@gmail.com> (www.josiahruddell.com)",
   "name": "webnote5",
+  "keywords": ["webnote5", "note-app", "note"],
   "description": "An amazing note app",
   "version": "0.1.0",
   "homepage": "http://webnote5.com",
@@ -16,7 +17,7 @@
     "express-csrf":">=0.3.3",
     "jade":">=0.13.0",
     "LazyBoy":">=0.1.3",
-    "socket.io":">=0.7.7",
+    "socket.io":">=0.8.2",
     "stylus":">=0.13.7"
   }
 }

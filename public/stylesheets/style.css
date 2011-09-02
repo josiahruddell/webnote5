@@ -1,3 +1,13 @@
+/*
+
+____________________________________________
+\\\|///
+ \\|//   stylus writes better css
+  \|/
+   |
+
+
+*/
 * {
   margin: 0;
   padding: 0;
@@ -66,9 +76,9 @@ sub {
   height: 25px;
   width: 100%;
   top: 0;
-  -webkit-box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-  -moz-box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-  box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+  -webkit-box-shadow: 0px 0px 10px rgba(0,0,0,0.30);
+  -moz-box-shadow: 0px 0px 10px rgba(0,0,0,0.30);
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.30);
 }
 #nav * {
   color: #222;
@@ -110,9 +120,9 @@ section * {
   text-decoration: none;
 }
 .boxshadow {
-  -webkit-box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-  -moz-box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
-  box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+  -webkit-box-shadow: 0px 0px 10px rgba(0,0,0,0.30);
+  -moz-box-shadow: 0px 0px 10px rgba(0,0,0,0.30);
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.30);
 }
 .rounded {
   border-radius: 3px;
@@ -163,9 +173,9 @@ section * {
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
   padding: 5px 0;
-  -webkit-box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
-  -moz-box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
-  box-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+  -webkit-box-shadow: 0px 0px 20px rgba(0,0,0,0.30);
+  -moz-box-shadow: 0px 0px 20px rgba(0,0,0,0.30);
+  box-shadow: 0px 0px 20px rgba(0,0,0,0.30);
 }
 .menu-list li {
   list-style: none;
@@ -220,9 +230,9 @@ section * {
   border: 1px solid #e1e1e1;
   border-radius: 5px;
   background-color: #fff;
-  -webkit-box-shadow: 0px 0px 8px rgba(0,0,0,0.3);
-  -moz-box-shadow: 0px 0px 8px rgba(0,0,0,0.3);
-  box-shadow: 0px 0px 8px rgba(0,0,0,0.3);
+  -webkit-box-shadow: 0px 0px 8px rgba(0,0,0,0.30);
+  -moz-box-shadow: 0px 0px 8px rgba(0,0,0,0.30);
+  box-shadow: 0px 0px 8px rgba(0,0,0,0.30);
   color: #111;
 }
 .oneformat ul li {
@@ -236,7 +246,9 @@ section * {
   cursor: default !important;
 }
 .page ::selection,
-.page ::-moz-selection {
+.page ::-moz-selection,
+.page ::-moz-selection,
+.page ::-webkit-selection {
   background: #a8d1ff;
   color: #222;
 }
