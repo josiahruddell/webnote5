@@ -1,3 +1,14 @@
+/*
+
+____________________________________________
+\\\|///
+ \\|//   It all starts here
+  \|/
+   |
+
+
+*/
+
 require(['jquery', 'class/MenuItem/MenuItem', 'lib/socket.io/socket.io.min', 'util/extensions'], function($, MenuItem) {
     $(function() {
         // one edit

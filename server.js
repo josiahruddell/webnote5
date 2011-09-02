@@ -1,6 +1,13 @@
-/**
- * Module dependencies.
- */
+/*
+
+____________________________________________
+\\\|///
+ \\|//   Everyone needs a server.js
+  \|/
+   |
+
+
+*/
 
 var express = require('express')
     , io = require('socket.io')

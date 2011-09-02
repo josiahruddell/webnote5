@@ -1,3 +1,15 @@
+/*
+
+________________________________________________________
+\\\|///
+ \\|//   Watch out world. I think this is the
+  \|/    first contenteditable rich text editor
+   |
+
+
+*/
+
+
 define(['jquery', 'lib/jquery/plugins/jquery.textselect'], function($){	
 	var ToolbarItem = function(el, opts){
         this.el = el;
@@ -165,7 +177,6 @@ define(['jquery', 'lib/jquery/plugins/jquery.textselect'], function($){
                         data.textSelect('select');
                         this.range = $.textSelect('getRange');
                     }
-                    //so then what is the point in doing the start != var wholeText = this.range....
                 }   
             },
             italic : {

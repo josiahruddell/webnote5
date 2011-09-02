@@ -1,3 +1,13 @@
+/*
+
+____________________________________________
+\\\|///
+ \\|//   Require classes, and activate jquery
+  \|/    plugins for easy element integration
+   |
+
+
+*/
 define(['jquery', 'class/MenuItem/MenuItem', 'class/OneEdit/OneEdit'], function($, MenuItem, OneEdit){
 	
 	$.fn.oneEdit = function(options){
@@ -19,7 +29,7 @@ define(['jquery', 'class/MenuItem/MenuItem', 'class/OneEdit/OneEdit'], function(
 	};
 
 
-
+	// gatherer coming soon (and will be renamed)
 	$.fn.gatherer = (function($, root){
 		// TODO: move out of global ns
 		// constructor

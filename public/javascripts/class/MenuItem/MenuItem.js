@@ -1,3 +1,14 @@
+/*
+
+____________________________________________
+\\\|///
+ \\|//   MenuItem is the OSX style menu class
+  \|/    TODO: needs json menu feed
+   |
+
+
+*/
+
 define(['jquery'], function($){	
 // constructor
 	var MenuItem = function(el, opts){
