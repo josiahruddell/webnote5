@@ -11,9 +11,6 @@
   "scripts": {
     "start": "node server.js"
   },
-  "engines": {
-    "node": ">=0.4.0"
-  },
   "dependencies": {
     "express": ">=2.4.3",
     "express-csrf":">=0.3.3",
