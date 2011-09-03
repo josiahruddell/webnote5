@@ -14,7 +14,7 @@ var express = require('express')
     // , RedisStore = require('connect-redis')
     , csrf = require('express-csrf')
     , Model = require('./lib/domain/models')
-    , port = process.env.C9_PORT || 3001;
+    , port = process.env.C9_PORT || 80;
 
 
 var app = module.exports = express.createServer();
