@@ -10,7 +10,7 @@ ________________________________________________________
 */
 
 
-define(['jquery', 'lib/jquery/plugins/jquery.textselect'], function($){	
+define(['jquery', 'lib/jquery/Plugins/jquery.textselect'], function($){	
 	var ToolbarItem = function(el, opts){
         this.el = el;
         this.opts = opts;
