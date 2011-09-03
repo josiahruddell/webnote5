@@ -80,7 +80,7 @@ app.get('/', function(req, res) {
             title: 'Notes'
         });
     else
-        res.redirect('new');
+        res.redirect('/new');
 });
 
 app.get('/category/:name', function(req, res) {
