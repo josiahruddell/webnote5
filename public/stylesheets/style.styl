@@ -8,6 +8,13 @@ ____________________________________________
 
 
 */
+
+
+box-shadow()
+  -webkit-box-shadow 0px 0px 15px rgba(0, 0, 0, 0.3)
+  -moz-box-shadow 0px 0px 15px rgba(0, 0, 0, 0.3)
+  box-shadow 0px 0px 15px rgba(0, 0, 0, 0.3)
+
 *
   margin 0
   padding 0
@@ -53,6 +60,7 @@ h1 sup,sub
   position fixed
   height: 100%
   background #dee4ea
+  display none
   //background #555 //#E5E5E5
   //background -webkit-gradient(linear, left top, right top, color-stop(0%,#555), color-stop(100%,#666))//#e7edf0
   //background -moz-linear-gradient(left, #555 0%, #666 100%)
@@ -65,7 +73,7 @@ h1 sup,sub
 
 
 #main
-  left 180px
+  //left 180px
   position relative
   top 26px
   background Transparent
@@ -78,16 +86,14 @@ h1 sup,sub
   background #E5E5E5
   background -moz-linear-gradient(top, #E5E5E5 0%, #C4C4C4 100%)
   background -webkit-gradient(linear, left top, left bottom, color-stop(0%,#E5E5E5), color-stop(100%,#C4C4C4))
-  text-shadow: 0 1px 0 #fff;
-  //filter progid:DXImageTransform.Microsoft.gradient(startColorstr='#E5E5E5', endColorstr='#C4C4C4',GradientType=0)
+  text-shadow 0 1px 0 #fff
+  // filter progid:DXImageTransform.Microsoft.gradient(startColorstr='#E5E5E5', endColorstr='#C4C4C4',GradientType=0)
   border-bottom 1px solid #757575
   position fixed
   height 25px
   width 100%
   top 0
-  -webkit-box-shadow 0px 0px 10px rgba(0, 0, 0, 0.3)
-  -moz-box-shadow 0px 0px 10px rgba(0, 0, 0, 0.3)
-  box-shadow 0px 0px 10px rgba(0, 0, 0, 0.3)
+  box-shadow()
 
 // # CONTAINER ELEMENTS
 
@@ -104,9 +110,9 @@ h1 sup,sub
 
 #bar li
   float left
-  letter-spacing 1px
 
-#bar li a
+#bar li a, #bar span
+  letter-spacing 1px
   padding 5px 10px
   display block
   cursor default
@@ -120,9 +126,10 @@ section#bar .contents
   padding 0px 15px 0px 15px
 
 section#bar .icon
+  padding 0 3x
   float right
-  width 25px
-  height 25px
+  //width 25px
+  //height 25px
 
 
 section#nav .contents
@@ -135,43 +142,66 @@ section *
 // # CLASSES
 
 .boxshadow
-  -webkit-box-shadow 0px 0px 10px rgba(0, 0, 0, 0.3)
-  -moz-box-shadow 0px 0px 10px rgba(0, 0, 0, 0.3)
-  box-shadow 0px 0px 10px rgba(0, 0, 0, 0.3)
+  box-shadow()
 
 .rounded
   border-radius 3px
 
+.hide
+  display none
+
+hr
+  height 1px
+  padding 0
+  background #ccc
+  margin 5px 1px
+  border none
 
 // # MENU STYLE
 
-.icon.search
-  padding-bottom 1px
-  background url('/images/search-hover.png') 6px 6px no-repeat
-  background-size 60%
+.icon.search span
+  background url('/images/icons/search_zoom_black.png') 2px 3px no-repeat
+  background-size 82%
   cursor default
+  opacity .85
 
-.icon.search.active
-  background-image url('/images/search.png')
+.icon.tags span
+  background url('/images/icons/tag_black.png') 2px 3px no-repeat
+  background-size 82%
+  cursor default
+  opacity .85
 
-#bar a.active
+#bar span.text
+  font-weight bold
+
+.icon.search.active span
+  background url('/images/icons/search_zoom_white.png') 2px 3px no-repeat
+
+.icon.tags.active span
+  background url('/images/icons/tag_white.png') 2px 3px no-repeat
+
+#bar a.active, #bar .active .text
   background #0066ff
   background -moz-linear-gradient(top, #6ca6d8 0%, #1e6cb4 100%)
   background -webkit-gradient(linear, left top, left bottom, color-stop(0%,#6ca6d8), color-stop(100%,#1e6cb4))
   color #fff
   text-shadow: 0 1px 0 #333;
 
-#search
-  padding 5px 5px 5px 15px
+.menu-window
+  padding 5px 15px 5px 15px
   position fixed
   right 15px
   top 25px
-  background #0066ff
+  background -moz-linear-gradient(top, #6ca6d8 0%, #1e6cb4 100%)
+  background -webkit-gradient(linear, left top, left bottom, color-stop(0%,#6ca6d8), color-stop(100%,#1e6cb4))
   color #fff
   font-weight bold
   z-index 1000
+  border-bottom-left-radius 4px
+  border-bottom-right-radius 4px
+  box-shadow()
 
-#search input
+.menu-window input
   margin-left 20px
   width 200px
   padding 2px 7px
@@ -179,6 +209,63 @@ section *
   font-size  12px
   border-radius 10px
   border none
+
+.menu-window div
+  padding 5px 0
+
+.menu-window .text
+  display inline-block
+  padding 4px
+  color #fff
+  font-weight normal
+  text-shadow #999 0 0.5px 0
+  text-decoration none
+
+.menu-window .text:hover
+  // background -moz-linear-gradient(top, #6ca6d8 0%, #1e6cb4 100%)
+  // background -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ccc), color-stop(100%,#1e6cb4))
+  color #555
+  border-radius 2px
+  background #eff3fb
+  cursor default !important
+
+.menu-window label
+  color #fff
+  display inline-block
+  width 70px
+
+span.mark
+  visibility hidden
+  display inline-block
+  width 20px
+  height 18px
+  margin-bottom -4px
+  background-size 95%
+  background url('/images/icons/arrow_left_white.png') 5px 0px no-repeat
+
+span.mark.check
+  background url('/images/icons/heck_yes_ok_white.png') 5px 0px no-repeat
+
+
+#login .spin
+  display none
+  position absolute
+  top 23px
+  left 50px
+
+#login.loading .spin
+  display block
+
+#login.loading label
+  visibility hidden
+
+//#signed-in span
+#signed-in img
+  margin 0 10px 10px 0
+  float left
+  border-radius 3px
+  border 1px solid #ccc
+  box-shadow()
 
 .menu-list
   z-index 98
@@ -191,9 +278,7 @@ section *
   border-bottom-left-radius 4px
   border-bottom-right-radius 4px
   padding 5px 0
-  -webkit-box-shadow 0px 0px 20px rgba(0, 0, 0, 0.3)
-  -moz-box-shadow 0px 0px 20px rgba(0, 0, 0, 0.3)
-  box-shadow 0px 0px 20px rgba(0, 0, 0, 0.3)
+  box-shadow()
   //box-shadow 0px 6px 9px 3px #333;
 
 .menu-list li
@@ -248,9 +333,7 @@ section *
   border 1px solid #E1E1E1
   border-radius 5px
   background-color #fff
-  -webkit-box-shadow 0px 0px 8px rgba(0, 0, 0, 0.3)
-  -moz-box-shadow 0px 0px 8px rgba(0, 0, 0, 0.3)
-  box-shadow 0px 0px 8px rgba(0, 0, 0, 0.3)
+  box-shadow()
   color #111
 
 .oneformat ul li
@@ -266,6 +349,7 @@ section *
 .page ::selection, .page ::-moz-selection
   background #a8d1ff
   color #222
+
 
 //.page *
 //  display inline

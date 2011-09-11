@@ -16,21 +16,26 @@ html
         nav
           ul
             li.f
-              a(href="#", data-target="#note5-menu", data-group="note5", style="font-weight:bold") Webnote5  
+              a(href="#", data-target="#note5-menu", data-group="note5", style="font-weight:bold") Webnote5
             li
               a(href="#", data-target="#file-menu", data-group="file") File
             li
               a(href="#", data-target="#edit-menu", data-group="edit") Edit
             li
               a(href="#", data-target="#window-menu", data-group="window") Window
-        a.icon.search(href="#", data-target="#search", data-group="search", data-position="right")    
+        a.icon.search(href="#", data-target="#search", data-group="search", data-position="right")
+          span &nbsp;
+        a.icon.tags(href="#", data-target="#tags", data-group="tags", data-position="right")
+          span &nbsp;
+        a.icon.login(href="#", data-target="#login", data-group="login", data-position="right") 
+          span.text=(current_user && current_user.username) || "Sign in"
+        
     section#main
       .contents
         .box4
           div.page!=body
           .shl_box4
           .shr_box4
-    
     ul#file-menu(class="menu-list", style="display:none")
       li
         a(href="/new") New
@@ -50,5 +55,37 @@ html
       li.hr
       li
         a(href="#") Preferences...
-    #search(style="display:none") Search
+    #search.menu-window(style="display:none") Search
       input(name="search")
+    #tags.menu-window(style="display:none") Tags
+      input(name="tags")
+    #login.menu-window(style="display:none")
+      #signed-in(class=current_user ? "show" : "hide")
+        div
+          img(src="http://www.gravatar.com/avatar/" + (current_user && current_user.gravatar))
+          span.text=current_user ? current_user.email || current_user.username : ""
+        hr
+        div
+          a.signout.text(href="#") Sign out
+      form#signed-out(action="/", class=current_user ? "hide" : "show")
+        div
+          label Username: 
+          input(name="username", placeholder="username", autocomplete="off")
+          span.mark
+          span.info
+        div.reg(style="display:none")
+          hr
+        div.reg(style="display:none")
+          label Email:
+          input(name="email", placeholder="email")
+          span.mark
+        div
+          label Password:
+          input(name="password", type="password", placeholder="password")
+          span.mark
+        div.reg(style="display:none")
+          label Confirm:
+          input(name="password2", type="password", placeholder="confirm password")
+          span.mark
+        span.spin
+        input(style="position: absolute; right: 9999em", type="submit")
