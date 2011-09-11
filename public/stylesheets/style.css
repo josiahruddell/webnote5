@@ -20,7 +20,7 @@ input:focus {
   outline: none;
 }
 html {
-  background: #999 url("/images/backgrounds/Pinstripe.jpg") 0 0;
+  background: #999 url("/images/backgrounds/SmallRipples.png") 0 0;
   background-attachment: fixed;
 }
 body {
