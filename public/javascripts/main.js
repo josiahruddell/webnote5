@@ -17,9 +17,22 @@ require([
 ],
 function($, MenuItem) {
     $(function() {
+        
+        var storage = sessionStorage || localStorage;
         // one edit
         $('#bodytext').oneEdit();
+        //scroll
+        //$("body").overscroll();
         
+        // TODO: move to templates, or use orm
+        if(storage['currentNote']){
+            var note = JSON.parse(storage['currentNote']);
+            $('div#bodytext').html(note.body);
+            $('#titletext').html(note.title);
+            $('#datetext').html(note.date);
+            $('#timetext').html(note.time);
+        }
+
         // resize
         var targets = $('#main'), nav = $('#nav');
         $(window).bind('resize', function(){
@@ -42,7 +55,14 @@ function($, MenuItem) {
                 },
                 file: function(e){
                     if($.trim($(this).html()) == 'Save'){
-                        console.log('save');
+                        
+                        var note = {
+                            body: $('div#bodytext').html(),
+                            title: $('#titletext').html(),
+                            date: $('#datetext').html(),
+                            time: $('#timetext').html()
+                        };
+                        storage['currentNote'] = JSON.stringify(note);
                         MenuItem.hideAll(e);
                     }
                 }

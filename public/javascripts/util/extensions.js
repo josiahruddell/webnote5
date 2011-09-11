@@ -13,7 +13,8 @@ define([
     'class/MenuItem/MenuItem', 
     'class/OneEdit/OneEdit', 
     'lib/spin.js/spin', 
-    'lib/jquery/Plugins/jquery.validate.min'
+    'lib/jquery/Plugins/jquery.validate.min',
+    'lib/jquery/Plugins/jquery.overscroll.min'
 ], 
 function($, MenuItem, OneEdit){
     $.fn.oneEdit = function(options){

@@ -10,13 +10,13 @@ html
       .contents
         ul
           li.f
-            a(href="/category/JULY%202011") JULY 2011
+            a(href="/category/nomnom") om nom nom..
     section#bar
       .contents
         nav
           ul
             li.f
-              a(href="#", data-target="#note5-menu", data-group="note5", style="font-weight:bold") Webnote5
+              a(href="#", data-target="#note5-menu", data-group="note5", style="font-weight:bold") Nom Notes
             li
               a(href="#", data-target="#file-menu", data-group="file") File
             li
@@ -51,7 +51,7 @@ html
         a(href="#") Navigator
     ul#note5-menu(class="menu-list", style="display:none")
       li
-        a(href="#") About Webnote5
+        a(href="#") About Nom Notes
       li.hr
       li
         a(href="#") Preferences...
@@ -62,7 +62,7 @@ html
     #login.menu-window(style="display:none")
       #signed-in(class=current_user ? "show" : "hide")
         div
-          img(src="http://www.gravatar.com/avatar/" + (current_user && current_user.gravatar))
+          img(src="http://www.gravatar.com/avatar/" + (current_user ? current_user.gravatar : ""))
           span.text=current_user ? current_user.email || current_user.username : ""
         hr
         div
