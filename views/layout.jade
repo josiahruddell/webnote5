@@ -4,19 +4,20 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
     link(rel='stylesheet', href='/stylesheets/box.css')
+    link(rel='stylesheet', href='/stylesheets/button.css')
     script(src="/javascripts/lib/requirejs/require-jquery.js", data-main="javascripts/main")
   body
     section#nav.boxshadow
       .contents
-        ul
-          li.f
-            a(href="/category/nomnom") om nom nom..
+        ul#notelist
+        //  li.f
+        //    a(href="/category/nomnom") om nom nom..
     section#bar
       .contents
         nav
           ul
             li.f
-              a(href="#", data-target="#note5-menu", data-group="note5", style="font-weight:bold") Nom Notes
+              a(href="#", data-target="#note5-menu", data-group="note5", style="font-weight:bold") NomNotes
             li
               a(href="#", data-target="#file-menu", data-group="file") File
             li
@@ -51,7 +52,7 @@ html
         a(href="#") Navigator
     ul#note5-menu(class="menu-list", style="display:none")
       li
-        a(href="#") About Nom Notes
+        a(href="#") About NomNotes
       li.hr
       li
         a(href="#") Preferences...
@@ -62,7 +63,7 @@ html
     #login.menu-window(style="display:none")
       #signed-in(class=current_user ? "show" : "hide")
         div
-          img(src="http://www.gravatar.com/avatar/" + (current_user ? current_user.gravatar : ""))
+          img.gravatar(src="http://www.gravatar.com/avatar/" + (current_user ? current_user.gravatar : "") + "?d=retro")
           span.text=current_user ? current_user.email || current_user.username : ""
         hr
         div
@@ -89,3 +90,15 @@ html
           span.mark
         span.spin
         input(style="position: absolute; right: 9999em", type="submit")
+    .window
+      form.inner
+        h2 Save As
+        div
+          label Title
+          input(type="text", name="title")
+        div
+          label Tags
+          input(type="text", name="tags")
+        div.alignright
+          button.minimal Cancel
+          button.minimal.primary Save

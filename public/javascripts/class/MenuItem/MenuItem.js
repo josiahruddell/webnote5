@@ -27,13 +27,13 @@ define(['jquery'], function($){
 		this.anyShowing = false;	
 	};
 	
-	MenuItem.hideAll = function(e){
+	MenuItem.hideAll = function(e, duration){
 		if(!this.anyShowing) return;
 		
 		this.anyShowing = false;
 		this.items.each(function(){ 
 			var t = $(this);
-			t.data('showing') && t.data('menuItem').toggleShow(e);
+			t.data('showing') && t.data('menuItem').toggleShow(e, duration);
 		});
 	};
 
@@ -82,7 +82,7 @@ define(['jquery'], function($){
 			this.list.css(css);
 		},
 		
-		toggleShow: function(e){
+		toggleShow: function(e, duration){
 			// don't toggle for mouseover, leave open
 			if(e && e.type == 'mouseover' && (!MenuItem.anyShowing || this.showing)) return;
 			
@@ -93,17 +93,20 @@ define(['jquery'], function($){
 			}
 			// hide others
 			if(!this.showing) MenuItem.hideAll();
+			var self = this;
+			this.list.fadeToggle(duration || 80, function(){
 
-			this.list.fadeToggle(80);
-			
-			this.item.toggleClass('active');
-			if(this.showing = this.item.hasClass('active')){
-				this.inputs.eq(0).focus().select();
+				
+			});
+			self.item.toggleClass('active');
+			if(self.showing = self.item.hasClass('active')){
+				self.inputs.eq(0).focus().select();
 				e && e.stopPropagation();
 			}
+		
+			MenuItem.anyShowing = self.showing;
+			self.item.data('showing', self.showing);	
 			
-			MenuItem.anyShowing = this.showing;
-			this.item.data('showing', this.showing);
 			this.group = this.item.data('group');
 			e && e.preventDefault();
 		},

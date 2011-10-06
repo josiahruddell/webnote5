@@ -17,8 +17,8 @@ require([
 ],
 function($, MenuItem) {
     $(function() {
-        
-        var storage = sessionStorage || localStorage;
+        var socket = io.connect(),
+            storage = sessionStorage || localStorage;
         // one edit
         $('#bodytext').oneEdit();
         //scroll
@@ -32,6 +32,14 @@ function($, MenuItem) {
             $('#datetext').html(note.date);
             $('#timetext').html(note.time);
         }
+
+        // TODO: improve, loading after view render
+        socket.emit('note/all', {}, function(err, notes){
+            var list = $('#notelist');
+            for(var i = 0; i < notes.length; i++){
+                list.append('<li data-id="' + notes[i].id + '">' + notes[i].title + '</li>');
+            }
+        });
 
         // resize
         var targets = $('#main'), nav = $('#nav');
@@ -55,14 +63,24 @@ function($, MenuItem) {
                 },
                 file: function(e){
                     if($.trim($(this).html()) == 'Save'){
-                        
                         var note = {
                             body: $('div#bodytext').html(),
                             title: $('#titletext').html(),
                             date: $('#datetext').html(),
-                            time: $('#timetext').html()
+                            time: $('#timetext').html(),
+                            id: $('#current-note-id').val()
                         };
+                        // TODO: build better gatherer
+                        
+                        // var note = $('.data-field').serializeObject();
                         storage['currentNote'] = JSON.stringify(note);
+                        
+                        socket.emit('note/save', note, function(err, note){
+                            // ... success then update html and close
+                            console.log('done save note', arguments); 
+                            $('.data-field[data-name="id"]').val(note.id);
+                        });
+                        
                         MenuItem.hideAll(e);
                     }
                 }
@@ -92,13 +110,29 @@ function($, MenuItem) {
         $('#login span.spin').spin({ color: '#fff', radius: 14, lines: 12, width: 0, length: 10 });
 
         // data
-        var socket = io.connect();
         
        
         var $login = $('#login'),
             $form = $('#signed-out'),
             $signedIn = $('#signed-in');
         
+        // narrow the scope of span.text
+        $signedIn.delegate('span.text', 'click', function(e){
+            $('<div />').window({ 
+                url: '/session/profile', // GET
+                submit: function(e, form){
+                    var self = this;
+                    e.preventDefault();
+                    var data = $(form).serializeObject();
+                    socket.emit('user/save', data, function(err, user){
+                        // ... success then update html and close
+                        console.log('done save', arguments); 
+                        self.destroy(); // modal close
+                    });
+                }
+            });
+            MenuItem.hideAll(e);
+        });
         // jquery validate form
         $form.validate();
 
@@ -147,7 +181,6 @@ function($, MenuItem) {
                 socket.emit(route, formData, function(err, user){
                     $login.removeClass('loading');
                     if(user){ 
-                        MenuItem.hideAll(e);
                         $('a.icon.login .text').html(user.username);
                         $signedIn.find('span.text').html(user.email);
                         $signedIn.find('img').attr('src', "http://www.gravatar.com/avatar/" + user.gravatar);
@@ -155,6 +188,8 @@ function($, MenuItem) {
                             .find('.reg').hide().end() // reset view
                             .find(':input').val('');   // clear
                         $signedIn.show();
+                        // delay the hide and slow it down
+                        setTimeout(function(){ MenuItem.hideAll(e, 400); }, 1200);
                     }
                     else { console.log(route, err); }
                 });

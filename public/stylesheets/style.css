@@ -20,7 +20,7 @@ input:focus {
   outline: none;
 }
 html {
-  background: #999 url("/images/backgrounds/SmallRipples.png") 0 0;
+  background: #999 url("/images/backgrounds/Pinstripe-med.jpg") 0 0;
   background-attachment: fixed;
 }
 body {
@@ -191,6 +191,10 @@ hr {
   border-radius: 10px;
   border: none;
 }
+.menu-window input:focus {
+  padding: 2px 7px;
+  border: none;
+}
 .menu-window div {
   padding: 5px 0;
 }
@@ -237,7 +241,7 @@ span.mark.check {
 #login.loading label {
   visibility: hidden;
 }
-#signed-in img {
+img.gravatar {
   margin: 0 10px 10px 0;
   float: left;
   border-radius: 3px;
@@ -335,4 +339,47 @@ span.mark.check {
 .page ::-webkit-selection {
   background: #a8d1ff;
   color: #222;
+}
+.window {
+  display: none;
+  top: 26px;
+  position: fixed;
+  padding: 15px;
+  background: #eee;
+  -webkit-box-shadow: 0px 0px 15px rgba(0,0,0,0.30);
+  -moz-box-shadow: 0px 0px 15px rgba(0,0,0,0.30);
+  box-shadow: 0px 0px 15px rgba(0,0,0,0.30);
+  z-index: 98;
+  border: 1px solid #ececec;
+  border-top: none;
+}
+.window .inner {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+.window h2 {
+  margin-bottom: 10px;
+  clear: both;
+  display: block;
+}
+.window .inner p {
+  display: block;
+  font-size: 13px;
+  margin: 0 0 10px;
+}
+.window .inner p.alignright {
+  text-align: right;
+  margin-bottom: 0;
+  margin-top: 15px;
+}
+.window .inner .col {
+  float: left;
+}
+.window label {
+  display: block;
+  padding: 0 0 3px 3px;
+}
+.window button {
+  margin-left: 5px;
 }

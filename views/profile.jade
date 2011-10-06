@@ -1,0 +1,18 @@
+h2 Profile
+div(style="width: 200px", class="col")
+  img.gravatar(src="http://www.gravatar.com/avatar/" + user.gravatar + '?s=180&d=retro')
+div(style="width: 220px", class="col")
+  form
+    input(type="hidden", name="id", value=user.id)
+    p
+      label Email
+      input(type="text", name="email", value=user.email)
+    p
+      label First Name
+      input(type="text", name="firstName", value=user.firstName)
+    p
+      label Last Name
+      input(type="text", name="lastName", value=user.lastName)
+    p.alignright
+      button.minimal.cancel Cancel
+      button.minimal.primary.submit Save
