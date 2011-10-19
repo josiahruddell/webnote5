@@ -11,7 +11,6 @@ ____________________________________________
 * {
   margin: 0;
   padding: 0;
-  color: #555;
 }
 input:focus {
   outline: none;
@@ -56,6 +55,7 @@ sub {
   z-index: 98;
   border: 1px solid #b4b4b4;
   border-left: none;
+  overflow: auto;
 }
 #main {
   position: relative;
@@ -296,6 +296,20 @@ img.gravatar {
   margin: 0 15px 15px;
   font-size: 107%;
 }
+section .page u {
+  text-decoration: underline;
+}
+section .page strike {
+  text-decoration: line-through;
+}
+section .page ul li {
+  margin-left: 20px;
+  list-style: circle;
+}
+section .page ol li {
+  margin-left: 20px;
+  list-style: decimal;
+}
 .date {
   color: #b0b0b0;
   position: absolute;
@@ -313,7 +327,8 @@ img.gravatar {
 .bold {
   font-weight: bold;
 }
-.oneformat {
+.oneformat,
+.oneformat .sub-toolbar {
   z-index: 1050;
   border: 1px solid #e1e1e1;
   border-radius: 5px;
@@ -326,19 +341,40 @@ img.gravatar {
 .oneformat ul li {
   float: left;
   list-style: none;
-  width: 15px;
-  height: 15px;
+  min-width: 16px;
+  height: 16px;
   text-align: center;
-  padding: 2px;
+  padding: 2px 4px;
   border-left: 1px solid #e1e1e1;
   cursor: default !important;
+  position: relative;
+}
+.oneformat ul li .icon {
+  top: 1px;
+}
+.oneformat .sub-toolbar {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  height: 48px;
+  width: 25px;
+  padding: 1px 1px 1px 0;
+}
+.oneformat .sub-toolbar .color {
+  border-radius: 2px;
+  padding: 0;
+  width: 10px;
+  min-width: 10px;
+  height: 10px;
+  margin: 1px 0 1px 1px;
+  display: block;
+  float: left;
 }
 .page ::selection,
 .page ::-moz-selection,
 .page ::-moz-selection,
 .page ::-webkit-selection {
   background: #a8d1ff;
-  color: #222;
 }
 .window {
   display: none;

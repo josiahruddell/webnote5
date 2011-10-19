@@ -15,7 +15,6 @@ var express = require('express')
     , connect = require('connect')
     , crypto = require('crypto')
     , csrf = require('express-csrf')
-    //, Model = require('./lib/domain/models')
     , MemoryStore = express.session.MemoryStore
     , sessionStore = new MemoryStore()
     , port = process.argv[2] || process.env.C9_PORT || 80;
@@ -25,7 +24,7 @@ var app = module.exports = express.createServer();
 
 // View Helpers
 app.dynamicHelpers({
-  csrf: csrf.token
+    csrf: csrf.token
 });
 
 app.dynamicHelpers({
@@ -70,7 +69,7 @@ app.configure(function() {
         }
         // secure:true,
     });
-    //Model.load('lib/models');
+    Model.load('lib/models');
 });
 
 app.configure('development', function() {
@@ -204,9 +203,21 @@ io.sockets.on('connection', function(socket){
             });
         }
     });
+
+    socket.on('note/find', function(id, fn){
+        if(hs.session.user){ // user is already logged in
+            // super overkill. need to only get title and note id... TODO:
+            Model('Note').find(id, function(err, note){
+                fn.call(null, err, note);
+            });
+        }
+    });
+
     socket.on('note/save', function(note, fn){
+
         if(hs.session.user){ // user is already logged in
             var save = function(err, savedNote){
+                console.log('##\t\adding note to session', savedNote);
                 if(savedNote){
                     hs.session.note = savedNote;
                     hs.session.save();
@@ -214,7 +225,8 @@ io.sockets.on('connection', function(socket){
 
                 fn.apply(null, arguments);
             };
-
+            console.log('##\t\session note id: ', hs.session.note && hs.session.note.id);
+            console.log('##\t\note id: ', note.id);
             if(hs.session.note && (hs.session.note.id == note.id)){ // current note
                 var currentNote = hs.session.note;
 
@@ -224,12 +236,13 @@ io.sockets.on('connection', function(socket){
                 currentNote.title = note.title;
                 currentNote.date = note.date;
                 currentNote.time = note.time;
-                newNote.save(save);    
+                currentNote.save(save);
             }
             else{
+                console.log('##\t\creating note');
                 var newNote = Model('Note').create(note);
                 newNote.userId = hs.session.user.id;
-                newNote.save(save);   
+                newNote.save(save);
             }
             
         }

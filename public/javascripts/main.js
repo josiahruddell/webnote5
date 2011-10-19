@@ -18,12 +18,13 @@ require([
 function($, MenuItem) {
     $(function() {
         var socket = io.connect(),
-            storage = sessionStorage || localStorage;
+            storage = sessionStorage || localStorage,
+            offline = false;
         // one edit
         $('#bodytext').oneEdit();
         //scroll
         //$("body").overscroll();
-        
+
         // TODO: move to templates, or use orm
         if(storage['currentNote']){
             var note = JSON.parse(storage['currentNote']);
@@ -31,14 +32,31 @@ function($, MenuItem) {
             $('#titletext').html(note.title);
             $('#datetext').html(note.date);
             $('#timetext').html(note.time);
+            $('#current-note-id').val(note.id);
         }
 
         // TODO: improve, loading after view render
         socket.emit('note/all', {}, function(err, notes){
-            var list = $('#notelist');
+            var list = $('#notelist').empty();
             for(var i = 0; i < notes.length; i++){
-                list.append('<li data-id="' + notes[i].id + '">' + notes[i].title + '</li>');
+                list.append('<li data-id="' + notes[i].id + '">' + notes[i].title + '<a class="del">delete</a></li>');
             }
+        });
+
+        $('#notelist').delegate('li', 'click', function(){
+            // save current?
+            console.log('got note', $(this).data('id'));
+            socket.emit('note/find', $(this).data('id'), function(err, note){
+                console.log('got note')
+            });
+        });
+
+        $('#notelist').delegate('.del', 'click', function(){
+            var id = $(this).parent().data('id');
+            console.log('del note', id)
+            socket.emit('note/delete', id, function(err, note){
+                console.log('del note')
+            });
         });
 
         // resize
@@ -73,12 +91,24 @@ function($, MenuItem) {
                         // TODO: build better gatherer
                         
                         // var note = $('.data-field').serializeObject();
-                        storage['currentNote'] = JSON.stringify(note);
+                        if(offline){
+                            var exists = $('#notelist li[data-id="' + note.id + '"]');
+                            if(exists.length) exists.html(note.title);
+                            else $('#notelist').append('<li data-id="' + note.id + '">' + note.title + '<a class="del">delete</a></li>')
+                            storage['currentNote'] = JSON.stringify(note);
+                        }
                         
                         socket.emit('note/save', note, function(err, note){
                             // ... success then update html and close
                             console.log('done save note', arguments); 
-                            $('.data-field[data-name="id"]').val(note.id);
+                            storage['currentNote'] = JSON.stringify(note);
+                            // save id
+                            $('#current-note-id').val(note.id);
+
+                            // update list
+                            var exists = $('#notelist li[data-id="' + note.id + '"]');
+                            if(exists.length) exists.html(note.title);
+                            else $('#notelist').append('<li data-id="' + note.id + '">' + note.title + '<a class="del">delete</a></li>');
                         });
                         
                         MenuItem.hideAll(e);

@@ -14,7 +14,7 @@ define([
     'class/OneEdit/OneEdit', 
     'lib/spin.js/spin', 
     'lib/jquery/Plugins/jquery.validate.min',
-    'lib/jquery/Plugins/jquery.overscroll.min'
+    'lib/jquery/Plugins/jquery.hotkeys'
 ], 
 function($, MenuItem, OneEdit){
     $.fn.oneEdit = function(options){
@@ -68,6 +68,36 @@ function($, MenuItem, OneEdit){
         return o;
     };
 
+    // var $divinput = $('div.input'),
+    //         $fakeinput = $('#fake').bind('keypress.divinput', function(e){
+    //             console.log('keydown');
+    //             e.stopPropagation();
+    //         });
+
+    //     $('button.dev').click(function(){
+    //         if(this.innerHTML == 'activate'){
+    //             bindinput();
+    //             this.innerHTML = 'deactivate';
+    //         }
+    //         else
+    //         {
+    //             unbindinput();
+    //             this.innerHTML = 'activate';
+    //         }
+    //     });
+    //     var bindinput = function(){
+    //         $(document).bind('keypress.divinput', function(e){
+    //             var val = $fakeinput.val(),
+    //                 char = String.fromCharCode(e.which);
+    //             $fakeinput.val(val + char);
+    //             $divinput.html($fakeinput.val());
+    //             return false;
+    //         });
+    //     };
+    //     var unbindinput = function(){
+    //         $(document).unbind('keypress.divinput');
+    //     };
+    //     // develop
 
     // gatherer coming soon (and will be renamed)
     $.fn.window = (function($, root){
