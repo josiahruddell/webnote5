@@ -17,7 +17,7 @@
     "connect": ">=1.7.0",
     "express-csrf":">=0.3.3",
     "jade":">=0.13.0",
-    "LazyBoy":">=0.1.3",
+    "LazyBoy":">=0.1.5",
     "socket.io":">=0.8.2",
     "stylus":">=0.13.7"
   }
