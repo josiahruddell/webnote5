@@ -1,5 +1,5 @@
 # Node.js with Express and Stlyus
-public/css/*.css
+# public/css/*.css
 /.monitor
 
 # Eclipse
