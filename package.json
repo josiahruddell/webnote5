@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "express": ">=2.4.3",
-    // "connect": ">=1.7.0",
     "express-csrf":">=0.3.3",
     "jade":">=0.13.0",
     "LazyBoy":">=0.1.5",
