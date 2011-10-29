@@ -113,9 +113,10 @@ function($, MenuItem) {
         // resize
         var targets = $('#main'), nav = $('#nav');
         $(window).bind('resize', function(){
-            var win = $(this), navwidth = nav.is(':visible') ? nav.width() : 0;
+            var win = $(this), navwidth = nav.width();
             nav.height(win.height() - 68);
-            targets.css({ width: win.width() - navwidth, left: navwidth});
+            nav.css({visibility: 'visible'});
+            targets.css({ width: win.width() - navwidth, left: navwidth, visibility: 'visible'});
         }).triggerHandler('resize');
 
         // menu item
