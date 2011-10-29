@@ -6,7 +6,7 @@ ____________________________________________
   \|/    everything here
    |
 
-
+        ** This file needs a major refactor - currently it is in get-it-done mode
 */
 
 require([
@@ -19,44 +19,95 @@ function($, MenuItem) {
     $(function() {
         var socket = io.connect(),
             storage = sessionStorage || localStorage,
-            offline = false;
+            offline = false,
+            currentNote;
         // one edit
         $('#bodytext').oneEdit();
-        //scroll
-        //$("body").overscroll();
 
         // TODO: move to templates, or use orm
-        if(storage['currentNote']){
-            var note = JSON.parse(storage['currentNote']);
+        function applyNote(note, saveLocal){
+            currentNote = note;
             $('div#bodytext').html(note.body);
             $('#titletext').html(note.title);
             $('#datetext').html(note.date);
             $('#timetext').html(note.time);
             $('#current-note-id').val(note.id);
+            
+            if(saveLocal) 
+                storage['currentNote'] = JSON.stringify(note);
+
+            markActiveNote(note.id);
+            
+        }
+
+        function markActiveNote(id){
+            id = id || currentNote.id;
+            var li = $('#notelist li[data-id="' + id + '"]');
+            if(li.length)
+                li.addClass('active').siblings().removeClass('active');
+        }
+
+        function getNote(){
+            var note = {
+                body: $('div#bodytext').html(),
+                title: $('#titletext').html(),
+                date: $('#datetext').html(),
+                time: $('#timetext').html()
+            };
+            
+            var id = $('#current-note-id').val();
+            if(id)
+                note.id = id;
+            return note;
+        }
+
+        function resetNote(){
+            var newNote = {
+                body: 'Click to Edit',
+                title: 'New Title'
+            };
+            $('#notelist li.active').removeClass('active');
+            applyNote(newNote);
+        }
+        
+        function loadNoteList(){
+            socket.emit('note/all', {}, function(err, notes){
+                var list = $('#notelist').empty(), cls;
+                for(var i = 0; i < notes.length; i++){
+                    cls = (currentNote && currentNote.id) == notes[i].id ? 'active' : '';
+                    list.append('<li class="' + cls + '" data-id="' + notes[i].id + '"><a class="del">x</a>' + notes[i].title + '</li>');
+                }
+            });
+        }
+        
+        loadNoteList();
+
+        if(storage['currentNote']){
+            applyNote(JSON.parse(storage['currentNote'], true));
         }
 
         // TODO: improve, loading after view render
-        socket.emit('note/all', {}, function(err, notes){
-            var list = $('#notelist').empty();
-            for(var i = 0; i < notes.length; i++){
-                list.append('<li data-id="' + notes[i].id + '">' + notes[i].title + '<a class="del">delete</a></li>');
-            }
-        });
+        
+        
 
         $('#notelist').delegate('li', 'click', function(){
             // save current?
-            console.log('got note', $(this).data('id'));
-            socket.emit('note/find', $(this).data('id'), function(err, note){
-                console.log('got note')
+            console.log('got note', $(this).attr('data-id'));
+            var li = $(this);
+            socket.emit('note/find', $(this).attr('data-id'), function(err, note){
+                applyNote(note);
             });
         });
 
-        $('#notelist').delegate('.del', 'click', function(){
-            var id = $(this).parent().data('id');
+        $('#notelist').delegate('.del', 'click', function(e){
+            var li = $(this).parent(),
+                id = li.data('id');
             console.log('del note', id)
             socket.emit('note/delete', id, function(err, note){
-                console.log('del note')
+                if(!err) li.remove();
+                console.log('del note', arguments);
             });
+            return false;
         });
 
         // resize
@@ -70,6 +121,14 @@ function($, MenuItem) {
         // menu item
         $('#bar li > a, #bar a.icon').menuItem({
             on: {
+                note5: function(e){
+                    if($.trim($(this).html()) == 'About NomNotes'){
+                        $('<div />').window({ 
+                            url: '/about'
+                        });
+                    }
+                    MenuItem.hideAll(e);
+                },
                 // once toolbar config comes from json, bind these events using a json select
                 // 'window.navigator': function(e){} ...
                 window: function(e){
@@ -80,23 +139,19 @@ function($, MenuItem) {
                     }
                 },
                 file: function(e){
-                    if($.trim($(this).html()) == 'Save'){
-                        var note = {
-                            body: $('div#bodytext').html(),
-                            title: $('#titletext').html(),
-                            date: $('#datetext').html(),
-                            time: $('#timetext').html(),
-                            id: $('#current-note-id').val()
-                        };
+                    if($.trim($(this).html()) == 'New'){
+                        resetNote();
+                    }
+                    else if($.trim($(this).html()) == 'Save'){
                         // TODO: build better gatherer
-                        
-                        // var note = $('.data-field').serializeObject();
-                        if(offline){
-                            var exists = $('#notelist li[data-id="' + note.id + '"]');
-                            if(exists.length) exists.html(note.title);
-                            else $('#notelist').append('<li data-id="' + note.id + '">' + note.title + '<a class="del">delete</a></li>')
-                            storage['currentNote'] = JSON.stringify(note);
-                        }
+                        var note = getNote();
+
+                        // if(offline){
+                        //     var exists = $('#notelist li[data-id="' + note.id + '"]');
+                        //     if(exists.length) exists.html('<a class="del">x</a>' + note.title);
+                        //     else $('#notelist').prepend('<li data-id="' + note.id + '"><a class="del">x</a>' + note.title + '</li>')
+                        //     storage['currentNote'] = JSON.stringify(note);
+                        // }
                         
                         socket.emit('note/save', note, function(err, note){
                             // ... success then update html and close
@@ -107,12 +162,13 @@ function($, MenuItem) {
 
                             // update list
                             var exists = $('#notelist li[data-id="' + note.id + '"]');
-                            if(exists.length) exists.html(note.title);
-                            else $('#notelist').append('<li data-id="' + note.id + '">' + note.title + '<a class="del">delete</a></li>');
+                            if(exists.length) exists.html('<a class="del">x</a>' + note.title);
+                            else $('#notelist').prepend('<li data-id="' + note.id + '"><a class="del">x</a>' + note.title + '</li>');
+
+                            markActiveNote(note.id);
                         });
-                        
-                        MenuItem.hideAll(e);
                     }
+                    MenuItem.hideAll(e);
                 }
             }
         });
@@ -169,12 +225,12 @@ function($, MenuItem) {
         // activate logout
         $signedIn.find('a.signout').click(function(e){
             socket.emit('session/destroy', {}, function(){
-                //MenuItem.hideAll(e);
                 $('a.icon.login .text').html('Sign in');
                 $signedIn.hide();
                 $form.show().find('input:first').focus();
-                //socket.disconnect();
-                //socket.reconnect();
+                delete storage['currentNote'];
+                resetNote();
+                $('#notelist').empty();
             });
             e.preventDefault();
         });
@@ -220,6 +276,7 @@ function($, MenuItem) {
                         $signedIn.show();
                         // delay the hide and slow it down
                         setTimeout(function(){ MenuItem.hideAll(e, 400); }, 1200);
+                        loadNoteList();
                     }
                     else { console.log(route, err); }
                 });

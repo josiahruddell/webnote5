@@ -117,6 +117,12 @@ app.get('/session/profile', function(req, res) {
     }
 });
 
+app.get('/about', function(req, res) {
+    res.render('about', {
+        layout: false
+    });
+});
+
 app.get('/category/:name', function(req, res) {
     res.render('index')
 });
@@ -196,10 +202,23 @@ io.sockets.on('connection', function(socket){
             Model('Note').where('userId', hs.session.user.id, function(err, notes){
                 console.log('##\t\tnotes: ', notes);
                 var notesView =  notes.map(function(note){
-                    return { id: note.id, title: note.title }
+                    return { id: note.id, title: note.title };
                 });
                 console.log('##\t\tnotesView: ', notesView);
                 fn.call(null, err, notesView);
+            });
+        }
+    });
+
+    socket.on('note/delete', function(id, fn){
+        if(hs.session.user){ // user is already logged in
+            // super overkill. need to only get title and note id... TODO:
+            Model('Note').find(id, function(err, note){
+                if(!err){
+                    note.remove(function(err){
+                        fn.call(null, err, note);
+                    });
+                }
             });
         }
     });
@@ -208,6 +227,8 @@ io.sockets.on('connection', function(socket){
         if(hs.session.user){ // user is already logged in
             // super overkill. need to only get title and note id... TODO:
             Model('Note').find(id, function(err, note){
+                console.log('##\tfound note: ', note);
+                hs.session.note = note;
                 fn.call(null, err, note);
             });
         }
@@ -225,8 +246,8 @@ io.sockets.on('connection', function(socket){
 
                 fn.apply(null, arguments);
             };
-            console.log('##\t\session note id: ', hs.session.note && hs.session.note.id);
-            console.log('##\t\note id: ', note.id);
+            console.log('##\tsession note id: ', hs.session.note && hs.session.note.id);
+            console.log('##\tnote id: ', note.id);
             if(hs.session.note && (hs.session.note.id == note.id)){ // current note
                 var currentNote = hs.session.note;
 

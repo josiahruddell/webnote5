@@ -15,6 +15,43 @@ define([
     'lib/jquery/Plugins/jquery.textselect'
 ], 
 function($){
+    
+    var SelectionHelper = {
+        insertNodeAtCursor: function(node) {
+            var sel = SelectionHelper.saveSelection(), range, html;
+            
+            if (sel.insertNode) {
+                sel.insertNode(node);
+            } else if (sel.pasteHTML) {
+                html = (node.nodeType == 3) ? node.data : node.outerHTML;
+                sel.pasteHTML(html);
+            }
+            SelectionHelper.restoreSelection(sel);
+        },
+        saveSelection: function () {
+            if (window.getSelection) {
+                sel = window.getSelection();
+                if (sel.getRangeAt && sel.rangeCount) {
+                    return sel.getRangeAt(0);
+                }
+            } else if (document.selection && document.selection.createRange) {
+                return document.selection.createRange();
+            }
+            return null;
+        },
+        restoreSelection: function (range) {
+            if (range) {
+                if (window.getSelection) {
+                    sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                } else if (document.selection && range.select) {
+                    range.select();
+                }
+            }
+        }
+    };
+
     var ToolbarItem = function(el, opts){
         this.el = el;
         this.opts = opts;
@@ -137,29 +174,21 @@ function($){
             this.width = null;
         },
         position: function(e){
-            if(e.type == 'mouseup')
+            // if(e.type == 'mouseup')
+            //     this.wrapper.css({
+            //         top: e.pageY + 15,
+            //         left: e.pageX  
+            //     });
+            // else{ // position for selected element
+                var n = $('<span />');
+                SelectionHelper.insertNodeAtCursor(n[0]);
+                var p = n.offset();
+                n.remove();
                 this.wrapper.css({
-                    top: e.pageY + 15,
-                    left: e.pageX  
+                    top: p.top - 25, // offset by text size?
+                    left: p.left
                 });
-            else{ // position for selected element
-                // either start or end should be text
-                var text = this.range.startElement.data ? this.range.startElement : this.range.endElement, 
-                    left;
-                if(text && /text/.test(text.nodeName)){
-                    var testEl = $('<span style="visiblity: hidden">' + text.data.substring(0, this.range.start) + '</span>')
-                        .appendTo(this.el);
-                    left = testEl.width();
-                    testEl.remove();
-                }
-                else debugger;
-                
-                var elOffset = $(text.parentNode).offset();
-                this.wrapper.css({
-                    top: elOffset.top + 25,
-                    left: left ? elOffset.left + left : elOffset.left
-                });
-            }
+            //}
             this.offset = this.wrapper.offset();
             this.width = this.wrapper.width();
             this.height = this.wrapper.height();
@@ -181,7 +210,7 @@ function($){
                     self.position(e);
                     self.wrapper.css({
                         visibility: 'visible',
-                        opacity: '.5'
+                        opacity: e.type == 'mouseup' ? '.5' : '.9'
                     });
                     // show formatter
                 }
@@ -360,3 +389,28 @@ function($){
 
     return OneEdit;
 });
+
+
+
+// var text = this.range.startElement.data ? this.range.startElement : this.range.endElement, 
+//     left, top, maxWidth = this.el.width();
+// if(text && /text/.test(text.nodeName)){
+//     //console.log(this.range);
+//     var testEl = $('<span style="visiblity: hidden">' + text.data.substring(0, this.range.start) + '</span>')
+//         .appendTo(this.el);
+//     left = testEl.width();
+//     // if this is wrapping text
+//     //console.log(left, maxWidth);
+//     if(left >= (maxWidth - 30)){ // position at the end
+//         var end = $('<span style="visiblity: hidden"></span>'), p;
+//         $(text).parents('div').append(end);
+//         p = end.position()
+//         left = p.left;
+//         top = p.top;
+//         end.remove();
+//     }
+//     testEl.remove();
+// }
+// else debugger;
+
+// var elOffset = $(text.parentNode).offset();
