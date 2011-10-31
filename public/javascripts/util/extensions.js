@@ -107,11 +107,7 @@ function($, MenuItem, OneEdit){
             Window.closeAll();
             this.el = $(el);
             $.extend(this, opts);
-            if(this.url)
-                this.load()
-            else
-                this.setup();
-
+            this.load();
         };
         Window.items = [];
         Window.closeAll = function(){
@@ -135,11 +131,19 @@ function($, MenuItem, OneEdit){
             load: function(){
                 var self = this;
                 this.inner = $('<div class="inner" />');
-                this.el.addClass('window')
+                var compact = this.html ? ' compact' : '';
+                this.el.addClass('window' + compact)
                     .appendTo('body').append(this.inner);
-                this.inner.load(this.url, function(){
-                    self.setup();
-                });
+                if(this.url){
+                    this.inner.load(this.url, function(){
+                        self.setup();
+                    });
+                }
+                else{
+
+                    this.inner.append(this.html ? this.html : $(this.content));
+                    this.setup();
+                }
             },
             show: function(){
                 this.el.fadeIn('fast');

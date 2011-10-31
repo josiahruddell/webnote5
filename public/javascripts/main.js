@@ -93,8 +93,10 @@ function($, MenuItem) {
         $('#notelist').delegate('li', 'click', function(){
             // save current?
             console.log('got note', $(this).attr('data-id'));
-            var li = $(this);
+            var li = $(this),
+                win = $('<div />').window({ html: '<span class="text">Loading...</span>' });
             socket.emit('note/find', $(this).attr('data-id'), function(err, note){
+                win.data('window') && win.data('window').destroy();
                 applyNote(note);
             });
         });
@@ -102,9 +104,11 @@ function($, MenuItem) {
         $('#notelist').delegate('.del', 'click', function(e){
             var li = $(this).parent(),
                 id = li.data('id');
-            console.log('del note', id)
+            console.log('del note', id);
+            var win = $('<div />').window({ html: '<span class="text">Deleting...</span>'});
             socket.emit('note/delete', id, function(err, note){
                 if(!err) li.remove();
+                win.data('window') && win.data('window').destroy();
                 console.log('del note', arguments);
             });
             return false;
@@ -112,6 +116,11 @@ function($, MenuItem) {
 
         // resize
         var targets = $('#main'), nav = $('#nav');
+        console.log('storage says', storage['sidebarVisible'])
+        // if(!storage['sidebarVisible'])
+        //     nav.css('display', 'none');
+        // else nav.css('display', 'block');
+
         $(window).bind('resize', function(){
             var win = $(this);
             nav.height(win.height() - 68);
@@ -125,9 +134,7 @@ function($, MenuItem) {
             on: {
                 note5: function(e){
                     if($.trim($(this).html()) == 'About NomNotes'){
-                        $('<div />').window({ 
-                            url: '/about'
-                        });
+                        $('<div />').window({ url: '/about' });
                     }
                     MenuItem.hideAll(e);
                 },
@@ -136,7 +143,8 @@ function($, MenuItem) {
                 window: function(e){
                     if($.trim($(this).html()) == 'Navigator'){
                         MenuItem.hideAll(e);
-                        $('#nav').toggle();
+                        var nav = $('#nav').toggle();
+                        storage['sidebarVisible'] = nav.is(':visible');
                         $(window).triggerHandler('resize');
                     }
                 },
@@ -154,6 +162,7 @@ function($, MenuItem) {
                         //     else $('#notelist').prepend('<li data-id="' + note.id + '"><a class="del">x</a>' + note.title + '</li>')
                         //     storage['currentNote'] = JSON.stringify(note);
                         // }
+                        var win = $('<div />').window({ html: '<span class="text">Saving...</span>' });
                         
                         socket.emit('note/save', note, function(err, note){
                             // ... success then update html and close
@@ -168,6 +177,7 @@ function($, MenuItem) {
                             else $('#notelist').prepend('<li data-id="' + note.id + '"><a class="del">x</a>' + note.title + '</li>');
 
                             markActiveNote(note.id);
+                            win.data('window') && win.data('window').destroy();
                         });
                     }
                     MenuItem.hideAll(e);

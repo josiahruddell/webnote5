@@ -411,6 +411,14 @@ section .page ol li {
   border: 1px solid #ececec;
   border-top: none;
 }
+.window.compact {
+  padding: 7px;
+}
+.window .text {
+  color: #444;
+  text-shadow: 0 1px 0 #fff;
+  font: 11pt "Helvetica Neue";
+}
 .window .inner {
   position: relative;
   top: 0;
