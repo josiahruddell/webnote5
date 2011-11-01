@@ -61,6 +61,14 @@ WebSocket.prototype.__proto__ = Transport.prototype;
 WebSocket.prototype.name = 'websocket';
 
 /**
+ * Websocket draft version
+ *
+ * @api public
+ */
+
+WebSocket.prototype.protocolVersion = 'hixie-76';
+
+/**
  * Called when the socket connects.
  *
  * @api private
@@ -176,9 +184,9 @@ WebSocket.prototype.write = function (data) {
     var length = Buffer.byteLength(data)
       , buffer = new Buffer(2 + length);
 
-    buffer.write('\u0000', 'binary');
+    buffer.write('\x00', 'binary');
     buffer.write(data, 1, 'utf8');
-    buffer.write('\uffff', 1 + length, 'binary');
+    buffer.write('\xff', 1 + length, 'binary');
 
     try {
       if (this.socket.write(buffer)) {
