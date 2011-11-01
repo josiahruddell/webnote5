@@ -136,6 +136,7 @@ app.listen(port);
 io = io.listen(app);
 
 io.configure('production', function(){
+    console.log('>> configuring production mode >>');
     io.enable('browser client minification');
     io.enable('browser client etag');
     io.set('log level', 1);
@@ -143,7 +144,9 @@ io.configure('production', function(){
 });
 
 io.configure('development', function(){
-  io.set('transports', ['websocket', 'htmlfile', 'xhr-polling']);
+    console.log('>> configuring development mode >>');
+    io.set('log level', 1);
+    io.set('transports', ['websocket', 'htmlfile', 'xhr-polling']);
 });
 
 var parseCookie = connect.utils.parseCookie,

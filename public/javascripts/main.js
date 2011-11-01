@@ -17,7 +17,10 @@ require([
 ],
 function($, MenuItem) {
     $(function() {
-        var socket = io.connect(),
+        var socket = io.connect(null, {
+            reconnect: true,
+            transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
+        }),
             storage = sessionStorage || localStorage,
             offline = false,
             currentNote;
