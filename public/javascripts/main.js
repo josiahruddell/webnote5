@@ -19,7 +19,7 @@ function($, MenuItem) {
     $(function() {
         var socket = io.connect(null, {
             reconnect: true,
-            transports: ['websocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling']
+            transports: [/*'websocket',*/'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling'] //websocket is not working with joyent hosting
         }),
             storage = sessionStorage || localStorage,
             offline = false,
