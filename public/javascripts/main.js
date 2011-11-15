@@ -74,7 +74,8 @@ function($, MenuItem) {
         }
         
         function loadNoteList(){
-            socket.emit('note/all', {}, function(err, notes){
+            socket.emit('note/titles', {}, function(err, notes){
+                console.log(notes);
                 var list = $('#notelist').empty(), cls;
                 for(var i = 0; i < notes.length; i++){
                     cls = (currentNote && currentNote.id) == notes[i].id ? 'active' : '';
@@ -82,44 +83,83 @@ function($, MenuItem) {
                 }
             });
         }
+
+        function saveNote(){
+            console.log('save');
+            var note = getNote();
+            var win = $('<div />').window({ html: '<span class="text">Saving...</span>' });
+            socket.emit('note/save', note, function(err, note){
+                // ... success then update html and close
+                console.log('done save note', arguments); 
+                storage['currentNote'] = JSON.stringify(note);
+                // save id
+                $('#current-note-id').val(note.id);
+
+                // update list
+                var exists = $('#notelist li[data-id="' + note.id + '"]');
+                if(exists.length) exists.html('<a class="del">x</a>' + note.title);
+                else $('#notelist').prepend('<li data-id="' + note.id + '"><a class="del">x</a>' + note.title + '</li>');
+
+                markActiveNote(note.id);
+                win.data('window') && win.data('window').destroy();
+            });
+        }
+        var saveTimeoutId;
+        function saveDelayed(ms){
+            if(saveTimeoutId) clearTimeout(saveTimeoutId);
+            
+            saveTimeoutId = setTimeout(function(){
+                saveNote();
+            }, ms);
+        }
         
         loadNoteList();
 
         if(storage['currentNote']){
             applyNote(JSON.parse(storage['currentNote'], true));
         }
+        $('.data-field').bind('focus', function() {
+            var $this = $(this);
+            $this.data('before', $this.html());
+            return $this;
+        }).bind('blur keyup paste', function() {
+            var $this = $(this);
+            if ($this.data('before') !== $this.html()) {
+                $this.data('before', $this.html());
+                $this.trigger('change');
+            }
+            return $this;
+        }).bind('change', function(){
+            saveDelayed(7000);
+        });
 
-        // TODO: improve, loading after view render
-        
-        
-
-        $('#notelist').delegate('li', 'click', function(){
+        $('#notelist').delegate('li', 'click', function(e){
             // save current?
-            console.log('got note', $(this).attr('data-id'));
+            console.log('loading note', $(this).attr('data-id'));
             var li = $(this),
                 win = $('<div />').window({ html: '<span class="text">Loading...</span>' });
             socket.emit('note/find', $(this).attr('data-id'), function(err, note){
-                win.data('window') && win.data('window').destroy();
                 applyNote(note);
+                console.log('applied note, closing window');
+                win.data('window') && win.data('window').destroy();
             });
+            return false;
         });
 
         $('#notelist').delegate('.del', 'click', function(e){
             var li = $(this).parent(),
                 id = li.data('id');
-            console.log('del note', id);
             var win = $('<div />').window({ html: '<span class="text">Deleting...</span>'});
             socket.emit('note/delete', id, function(err, note){
                 if(!err) li.remove();
                 win.data('window') && win.data('window').destroy();
-                console.log('del note', arguments);
             });
             return false;
         });
 
         // resize
         var targets = $('#main'), nav = $('#nav');
-        console.log('storage says', storage['sidebarVisible'])
+        // console.log('storage says', storage['sidebarVisible'])
         // if(!storage['sidebarVisible'])
         //     nav.css('display', 'none');
         // else nav.css('display', 'block');
@@ -156,32 +196,7 @@ function($, MenuItem) {
                         resetNote();
                     }
                     else if($.trim($(this).html()) == 'Save'){
-                        // TODO: build better gatherer
-                        var note = getNote();
-
-                        // if(offline){
-                        //     var exists = $('#notelist li[data-id="' + note.id + '"]');
-                        //     if(exists.length) exists.html('<a class="del">x</a>' + note.title);
-                        //     else $('#notelist').prepend('<li data-id="' + note.id + '"><a class="del">x</a>' + note.title + '</li>')
-                        //     storage['currentNote'] = JSON.stringify(note);
-                        // }
-                        var win = $('<div />').window({ html: '<span class="text">Saving...</span>' });
-                        
-                        socket.emit('note/save', note, function(err, note){
-                            // ... success then update html and close
-                            console.log('done save note', arguments); 
-                            storage['currentNote'] = JSON.stringify(note);
-                            // save id
-                            $('#current-note-id').val(note.id);
-
-                            // update list
-                            var exists = $('#notelist li[data-id="' + note.id + '"]');
-                            if(exists.length) exists.html('<a class="del">x</a>' + note.title);
-                            else $('#notelist').prepend('<li data-id="' + note.id + '"><a class="del">x</a>' + note.title + '</li>');
-
-                            markActiveNote(note.id);
-                            win.data('window') && win.data('window').destroy();
-                        });
+                        saveNote();
                     }
                     MenuItem.hideAll(e);
                 }
@@ -209,14 +224,39 @@ function($, MenuItem) {
         flashLogin(2 * 60 * 1000, 0, 0);
         */
         $('#login span.spin').spin({ color: '#fff', radius: 14, lines: 12, width: 0, length: 10 });
-
-        // data
-        
        
         var $login = $('#login'),
             $form = $('#signed-out'),
-            $signedIn = $('#signed-in');
+            $signedIn = $('#signed-in'),
+            toggleLoginView = function(e){
+                if($form.find('.reg:visible').length){ // reg view
+                    showLoginView.call(this);
+                }
+                else{ // login view
+                    showRegView.call(this);
+                }
+                return false;   
+            },
+            showRegView = function(fn){
+                $login.find('.reg').css({ height: 0, opacity: 0})
+                    .show()
+                    .animate({ height: 29, opacity: 1}, fn || function(){
+                        $login.find('input[name=username]').focus();
+                    });
+                $(this).html('Already have an account?');
+            },
+            showLoginView = function(fn){
+                $login.find('.reg').animate({ height: 0, opacity: 0}, function(){ 
+                    $(this).hide(); 
+                    if(fn) fn()
+                    else $login.find('input[name=username]').focus();
+                        
+                });
+                $(this).html("Don't have an account?");
+            };
         
+        $form.find('a.toggleView').click(toggleLoginView);
+
         // narrow the scope of span.text
         $signedIn.delegate('span.text', 'click', function(e){
             $('<div />').window({ 
@@ -261,14 +301,18 @@ function($, MenuItem) {
                 socket.emit('user/exists', { username: this.value }, function(exists){
                     $login.removeClass('loading');
                     if(exists){ // login
-                        $login.find('input[name=password]').focus();
-                        $login.find('.reg').hide('fast');
+                        if($login.find('.reg:visible').length > 0)
+                            showLoginView.call($form.find('a.toggleView'), function(){
+                                $login.find('input[name=password]').focus(); 
+                            });
                     }
                     else { // register
                         $this.next('.mark').addClass('check').css('visibility', 'visible');
-                        $login.find('.reg').show('fast', function(){
-                            $login.find('input[name=email]').focus();
-                        });
+                        if($login.find('.reg:visible').length == 0)
+                            showRegView.call($form.find('a.toggleView'), function(){
+                                $login.find('input[name=email]').focus(); 
+                            });
+                            
                     }
                 });
             }
@@ -298,44 +342,6 @@ function($, MenuItem) {
             }
             e.preventDefault();
         });
-
-
-        // socket.emit('addnote', { 
-        //  data: '<b> this is a test note body. </b>',
-        //  title: 'New Note'
-        // });
-
-        // socket.on('notesaved', function(note){
-        //     console.log(note);
-        // });
-
-        // socket.emit('user/save', { 
-        //   username: 'josiah',
-        //   password: 'lolworld',
-        //   firstname: 'josiah',
-        //   lastname: 'ruddell',
-        //   email: 'jruddell@gmail.com'
-        // });
-
-        // socket.on('user/saved', function(user){
-        //     console.log('log saved ', user);
-            
-        // });
-        // socket.on('user/authorized', function(user){
-        //     console.log('log authorized', user);
-            
-        // });
-
-        // socket.emit('user/auth', {
-        //     username: 'josiah',
-        //     password: 'lolworld'
-        // });
-
-        // socket.on('user/authorized', function(user){
-        //     console.log('log authorized', user);
-            
-        // });
-
 
     });
 });

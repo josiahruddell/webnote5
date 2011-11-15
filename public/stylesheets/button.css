@@ -34,6 +34,11 @@ button.minimal {
   text-align: center;
   text-shadow: 0 1px 0 #eee 
 }
+
+button.minimal.small {
+  padding: 3px 10px 4px;
+}
+
 button.primary.minimal {  background-color: #1e6cb4; color: #fff; text-shadow: 0 1px 0 #444 ; }
 button.minimal:hover {
   /*background: #d9d9d9;*/

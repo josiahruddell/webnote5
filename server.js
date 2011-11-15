@@ -104,7 +104,7 @@ app.get('/', function(req, res) {
     res.render('new', {
         date: days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear(),
         time: hr12(d.getHours()) + ':' + d2(d.getMinutes()) + ampm(d.getHours()),
-        title: '* untitled note '  
+        title: 'NomNotes - a simple way to take notes'  
     });
 });
 
@@ -173,102 +173,59 @@ io.set('authorization', function (data, accept) {
        return accept('No cookie transmitted.', false);
     }
 });
+var noteService = require('./lib/services/NoteService'),
+    userService = require('./lib/services/UserService');
 
 io.sockets.on('connection', function(socket){
     // Notes ...
-    var hs = socket.handshake;
-    console.log('A socket with sessionID ' + hs.sessionID+ ' connected!');
-    // setup an inteval that will keep our session fresh
-    // var intervalID = setInterval(function () {
-    //     // reload the session (just in case something changed,
-    //     // we don't want to override anything, but the age)
-    //     // reloading will also ensure we keep an up2date copy
-    //     // of the session with our connection.
-    //     if(!hs.session) return;
-    //     hs.session.reload( function () { 
-    //         // "touch" it (resetting maxAge and lastAccess)
-    //         // and save it back again.
-    //         hs.session.touch();
-    //         hs.session.save();
-    //     });
-    // }, 60 * 1000);
+    var hs = socket.handshake,
+        session = hs.session;
+
+    console.log('A socket with hs.sessionID ' + hs.sessionID+ ' connected!');
 
     socket.on('disconnect', function () {
-        console.log('A socket with sessionID ' + hs.sessionID + ' disconnected!');
-        // clear the socket interval to stop refreshing the session
-        //clearInterval(intervalID);
+        console.log('A socket with hs.sessionID ' + hs.sessionID + ' disconnected!');
     });
 
     socket.on('note/all', function(filter, fn){
-        if(hs.session.user){ // user is already logged in
-            // super overkill. need to only get title and note id... TODO:
-            Model('Note').where('userId', hs.session.user.id, function(err, notes){
-                console.log('##\t\tnotes: ', notes);
-                var notesView =  notes.map(function(note){
-                    return { id: note.id, title: note.title };
-                });
-                console.log('##\t\tnotesView: ', notesView);
-                fn.call(null, err, notesView);
-            });
+        if(session.user){ // user is already logged in
+            noteService.all(session.user.id, fn);
+        }
+    });
+
+    socket.on('note/titles', function(filter, fn){
+        if(session.user){ // user is already logged in
+            noteService.titles(session.user.id, fn)
         }
     });
 
     socket.on('note/delete', function(id, fn){
-        if(hs.session.user){ // user is already logged in
-            // super overkill. need to only get title and note id... TODO:
-            Model('Note').find(id, function(err, note){
-                if(!err){
-                    note.remove(function(err){
-                        fn.call(null, err, note);
-                    });
-                }
-            });
+        if(session.user){ // user is already logged in
+            noteService.remove(id, fn);
         }
     });
 
     socket.on('note/find', function(id, fn){
-        if(hs.session.user){ // user is already logged in
-            // super overkill. need to only get title and note id... TODO:
-            Model('Note').find(id, function(err, note){
-                console.log('##\tfound note: ', note);
-                hs.session.note = note;
-                fn.call(null, err, note);
+        if(session.user){ // user is already logged in
+            noteService.find(id, function(err, note){
+                session.note = note;
+                fn.apply(null, arguments);
             });
         }
     });
 
     socket.on('note/save', function(note, fn){
-
-        if(hs.session.user){ // user is already logged in
-            var save = function(err, savedNote){
-                console.log('##\t\adding note to session', savedNote);
-                if(savedNote){
-                    hs.session.note = savedNote;
-                    hs.session.save();
+        
+        if(session.user){ // user is already logged in;
+            note.userId = session.user.id;
+            noteService.save(note, function(err, savedNote){
+                 if(savedNote){
+                    session.note = savedNote;
+                    session.save();
                 }
 
                 fn.apply(null, arguments);
-            };
-            console.log('##\tsession note id: ', hs.session.note && hs.session.note.id);
-            console.log('##\tnote id: ', note.id);
-            if(hs.session.note && (hs.session.note.id == note.id)){ // current note
-                var currentNote = hs.session.note;
-
-                console.log('##\t\updating note with id %s', currentNote.id);
-
-                currentNote.body = note.body;
-                currentNote.title = note.title;
-                currentNote.date = note.date;
-                currentNote.time = note.time;
-                currentNote.save(save);
-            }
-            else{
-                console.log('##\t\creating note');
-                var newNote = Model('Note').create(note);
-                newNote.userId = hs.session.user.id;
-                newNote.save(save);
-            }
-            
+            });
         }
     });
 
@@ -279,8 +236,8 @@ io.sockets.on('connection', function(socket){
         currentUser.authenticate(function(err, user){
             
             if (user) { // valid user, set session user
-                hs.session.user = user;
-                hs.session.save();
+                session.user = user;
+                session.save();
             }
             
             fn.apply(null, arguments);
@@ -288,16 +245,10 @@ io.sockets.on('connection', function(socket){
     });
 
     socket.on('session/destroy', function(message, fn){
-        hs.session.user = null;
-        hs.session.save();
+        session.user = null;
+        session.note = null;
+        session.save();
         
-        // UHhhh... need to destroy the session, or is that even required??
-        // need to get a new session if this one is destroyed.
-        
-        // hs.session.destroy(function() {
-        //    clearInterval(intervalID);
-        // });
-
         fn.apply(null);
     });
 
@@ -305,14 +256,14 @@ io.sockets.on('connection', function(socket){
     socket.on('user/save', function(data, fn){
         var onsave = function(err, user){
             if (user) { // valid user, set session user
-                hs.session.user = user;
-                hs.session.save();
+                session.user = user;
+                session.save();
             }
             fn.apply(null, arguments);
         };
         
-        if(hs.session.user){ // user is already logged in
-            var currentUser = hs.session.user;
+        if(session.user){ // user is already logged in
+            var currentUser = session.user;
             currentUser.firstName = data.firstName;
             currentUser.lastName = data.lastName;
             currentUser.email = data.email;
@@ -330,12 +281,9 @@ io.sockets.on('connection', function(socket){
     });
 
 
-    socket.on('user/exists', function(data, fn){
-        Model('User').where('username', data.username, function(err, users){
-            // if a user with this username was found send true
-            users[0] ? fn(true) : fn(false);
-        });
-    });
+    socket.on('user/exists', userService.exists);
 });
 
+
 console.log("Express server listening at %s:%d", app.address().address, app.address().port);
+

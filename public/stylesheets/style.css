@@ -263,6 +263,12 @@ span.mark.check {
 #login.loading label {
   visibility: hidden;
 }
+#login div.reg {
+  padding: 0;
+}
+#login div.reg * {
+  margin-top: 5px;
+}
 img.gravatar {
   margin: 0 10px 10px 0;
   float: left;
@@ -433,6 +439,16 @@ section .page ol li {
   display: block;
   font-size: 13px;
   margin: 0 0 10px;
+}
+#login .alignright {
+  margin-right: 20px;
+}
+.alignright {
+  text-align: right;
+}
+.alignleft {
+  float: left;
+  display: inline-block;
 }
 .window .inner p.alignright {
   text-align: right;

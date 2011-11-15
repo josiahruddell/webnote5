@@ -74,8 +74,8 @@ html
           input(name="username", placeholder="username", autocomplete="off")
           span.mark
           span.info
-        div.reg(style="display:none")
-          hr
+        //div.reg(style="display:none")
+        //  hr
         div.reg(style="display:none")
           label Email:
           input(name="email", placeholder="email")
@@ -89,7 +89,11 @@ html
           input(name="password2", type="password", placeholder="confirm password")
           span.mark
         span.spin
-        input(style="position: absolute; right: 9999em", type="submit")
+        p.alignright
+          span.alignleft
+            a.text.toggleView(href="#", style="text-decoration: underline") Don't have an account?
+          button.minimal.small.submit Submit
+        //input(style="position: absolute; right: 9999em", type="submit")
     .window
       form.inner
         h2 Save As
