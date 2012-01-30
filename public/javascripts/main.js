@@ -43,6 +43,16 @@ function($, MenuItem) {
             
         }
 
+        function applyTheme(theme){
+            if(theme == 'default'){
+                $('head link[id]').remove();
+            }
+            else{
+                $('head link[id]').remove();
+                $('head').prepend('<link rel="stylesheet" id="current-theme-style" href="/stylesheets/themes/' + theme + '.css" />');
+            }
+        }
+
         function markActiveNote(id){
             id = id || currentNote.id;
             var li = $('#notelist li[data-id="' + id + '"]');
@@ -160,6 +170,7 @@ function($, MenuItem) {
         // resize
         var targets = $('#main'), nav = $('#nav');
         // console.log('storage says', storage['sidebarVisible'])
+        //if(nav.find('li').length)
         // if(!storage['sidebarVisible'])
         //     nav.css('display', 'none');
         // else nav.css('display', 'block');
@@ -176,8 +187,30 @@ function($, MenuItem) {
         $('#bar li > a, #bar a.icon').menuItem({
             on: {
                 note5: function(e){
-                    if($.trim($(this).html()) == 'About NomNotes'){
-                        $('<div />').window({ url: '/about' });
+                    switch($.trim($(this).html())){
+                        case 'About NomNotes':
+                            $('<div />').window({ url: '/about' });
+                        break;
+                        case 'Preferences...':
+                            $('<div />').window({ 
+                                url: '/user/preferences', 
+                                submit: function(e, form){
+                                    var self = this;
+                                    e.preventDefault();
+                                    var data = $(form).serializeObject();
+                                    console.log('save theme', data); 
+                                    socket.emit('user/save', data, function(err, user){
+                                        console.log('done save user', arguments); 
+                                        self.destroy(); // modal close
+                                    });
+                                },
+                                beforeShow: function(){
+                                    this.inner.find('select').change(function(){
+                                        applyTheme($(this).val());
+                                    });
+                                } 
+                            });
+                        break;
                     }
                     MenuItem.hideAll(e);
                 },
@@ -265,9 +298,10 @@ function($, MenuItem) {
                     var self = this;
                     e.preventDefault();
                     var data = $(form).serializeObject();
+                    console.log('saving user', data); 
                     socket.emit('user/save', data, function(err, user){
                         // ... success then update html and close
-                        console.log('done save', arguments); 
+                        console.log('done save user', arguments); 
                         self.destroy(); // modal close
                     });
                 }
@@ -286,6 +320,7 @@ function($, MenuItem) {
                 delete storage['currentNote'];
                 resetNote();
                 $('#notelist').empty();
+                $('head link[id]').remove();
             });
             e.preventDefault();
         });
@@ -336,6 +371,7 @@ function($, MenuItem) {
                         // delay the hide and slow it down
                         setTimeout(function(){ MenuItem.hideAll(e, 400); }, 1200);
                         loadNoteList();
+                        applyTheme(user.theme || 'default');
                     }
                     else { console.log(route, err); }
                 });

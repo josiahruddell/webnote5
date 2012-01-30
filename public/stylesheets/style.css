@@ -48,7 +48,7 @@ sub {
   width: 180px;
   position: fixed;
   height: 100%;
-  background: #eee;
+  background: rgba(238,238,238,0.85);
   top: 46px;
   left: 0;
   z-index: 98;
@@ -67,11 +67,10 @@ sub {
 }
 #bar {
   position: relative;
-  opacity: 0.85;
+  background: rgba(229,229,229,0.85);
   z-index: 99;
-  background: #e5e5e5;
-  background: -moz-linear-gradient(top, #e5e5e5 0%, #c4c4c4 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #e5e5e5), color-stop(100%, #c4c4c4));
+  background: -moz-linear-gradient(top, rgba(229,229,229,0.85) 0%, rgba(196,196,196,0.85) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(229,229,229,0.85)), color-stop(100%, rgba(196,196,196,0.85)));
   text-shadow: 0 1px 0 #fff;
   border-bottom: 1px solid #757575;
   position: fixed;
@@ -280,10 +279,9 @@ img.gravatar {
 }
 .menu-list {
   z-index: 98;
-  opacity: 0.95;
   width: 200px;
   position: fixed;
-  background: #fff;
+  background: rgba(255,255,255,0.95);
   border: 1px solid #ccc;
   border-top: none;
   border-bottom-left-radius: 4px;
@@ -377,6 +375,9 @@ section .page ol li {
   cursor: default !important;
   position: relative;
 }
+.oneformat ul li:first-child {
+  border-left: none;
+}
 .oneformat ul li .icon {
   top: 1px;
 }
@@ -385,7 +386,7 @@ section .page ol li {
   bottom: 20px;
   left: 0;
   height: 48px;
-  width: 25px;
+  width: 36px;
   padding: 1px 1px 1px 0;
 }
 .oneformat .sub-toolbar .color {

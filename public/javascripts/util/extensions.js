@@ -136,6 +136,7 @@ function($, MenuItem, OneEdit){
                     .appendTo('body').append(this.inner);
                 if(this.url){
                     this.inner.load(this.url, function(){
+                        if(self.beforeShow) self.beforeShow.call(self);
                         self.setup();
                     });
                 }

@@ -1,0 +1,11 @@
+h2 Preferences
+div
+  form
+    p
+      label Theme
+      select(name="theme")
+        option(value="default", selected=('default'== user.theme)) Default
+        option(value="dark", selected=('dark'== user.theme)) Dark
+    p.alignright
+      button.minimal.cancel Cancel
+      button.minimal.primary.submit Save

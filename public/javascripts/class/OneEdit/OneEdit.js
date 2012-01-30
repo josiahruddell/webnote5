@@ -11,8 +11,8 @@ ________________________________________________________
 
 
 define([
-    'jquery', 
-    'lib/jquery/Plugins/jquery.textselect'
+    'jquery'
+    //, 'lib/jquery/Plugins/jquery.textselect' // (see selection helper instead)
 ], 
 function($){
     
@@ -94,13 +94,16 @@ function($){
             var self = this;
             this.doc = document;
             this.cache = {
-                'mousemove': { el: document, fn: $.proxy(self.opacityInterest, self) },
-                'mouseup': { el: document, fn: $.proxy(self.close, self) },
-                'keydown': { el: this.el, fn: $.proxy(self.checkKeySelect, self) }
+                'mousemove.doc': { el: document, fn: $.proxy(self.opacityInterest, self) },
+                'mouseup.doc': { el: document, fn: $.proxy(self.close, self) },
+                'mouseup.body': { el: document.body, fn: $.proxy(self.open, self) },
+                'keydown.el': { el: this.el, fn: $.proxy(self.checkKeySelect, self) }
             };
             this._build();
             this._bind();
-            this.el.bind("mouseup", $.proxy(self.open, self));
+            // moved to body so that when the mouse is out of the container the event
+            // is still captured
+            // this.el.bind('mouseup', $.proxy(self.open, self));
             
             this.wrapper.hover(function(e){
                 self.mouseIsOver = true;
@@ -117,7 +120,7 @@ function($){
             for(var name in this.cache){
                 $(this.cache[name].el).unbind(name, this.cache[name].fn);
             }
-            this.el.unbind("mouseup");
+            // this.el.unbind("mouseup");
         },
         _getIcons: function(){
             var ul = $('<ul class="toolbar">');
@@ -180,6 +183,7 @@ function($){
             //         left: e.pageX  
             //     });
             // else{ // position for selected element
+                console.log('positioning');
                 var n = $('<span />');
                 SelectionHelper.insertNodeAtCursor(n[0]);
                 var p = n.offset();
@@ -192,6 +196,7 @@ function($){
             this.offset = this.wrapper.offset();
             this.width = this.wrapper.width();
             this.height = this.wrapper.height();
+            console.log('positioning', this.offset);
             this.box = new Box([
                 this.offset.top, 
                 this.offset.left + this.width, 
@@ -200,12 +205,13 @@ function($){
             ]);
         },
         open: function(e){
-            //console.log('open');
+            console.log('open', e);
             var self = this;
             setTimeout(function(){
                 if(self.isOpen) self.close();
-                self.range = self.el.textSelect('getRange');
-                if (self.range.start !== self.range.end){
+                self.range = SelectionHelper.saveSelection();
+                console.log('open if: ', self.range && !self.range.collapsed)
+                if (self.range && !self.range.collapsed){
                     self.isOpen = true;
                     self.position(e);
                     self.wrapper.css({
@@ -297,7 +303,24 @@ function($){
                 '<div class="icon icon-increase-font">' +
                     '<div class="icon-increase-font-text">A</div>' +
                     '<div class="icon-increase-font-arrow"></div>' +
-                '</div>'
+                '</div>',
+            action: function(e, fn){
+                e.preventDefault();
+                e.stopPropagation();
+                var sel = SelectionHelper.saveSelection();
+                var allText = $(sel.startContainer).text();
+                var startText = allText.substring(0, sel.startOffset);
+                var selectedText = allText.substring(sel.startOffset, sel.endOffset);
+                var endText = allText.substring(sel.endOffset);
+
+                var formatted = $('<font style="font-size: 110%" />').append(selectedText);
+                var wrap = $('<span />')
+                    .append(startText)
+                    .append(formatted)
+                    .append(endText);
+                $(sel.startContainer).replaceWith(wrap);
+            }
+            
         },
         'decreaseFontSize': {
             alt: 'Decrease Font Size',
@@ -346,14 +369,18 @@ function($){
                 
             },
             prompt: '<ul class="sub-toolbar">' +
-                        '<li class="color" data-color="#f88b00" style="background-color: #f88b00"></li>' +
-                        '<li class="color" data-color="#f800f6" style="background-color: #f800f6"></li>' +
-                        '<li class="color" data-color="#0000f8" style="background-color: #0000f8"></li>' +
-                        '<li class="color" data-color="#f80000" style="background-color: #f80000"></li>' +
-                        '<li class="color" data-color="#4c4c4c" style="background-color: #4c4c4c"></li>' +
-                        '<li class="color" data-color="#005689" style="background-color: #005689"></li>' +
-                        '<li class="color" data-color="#d2d2d2" style="background-color: #d2d2d2"></li>' +
-                        '<li class="color" data-color="#a43800" style="background-color: #a43800"></li>' +
+                        '<li class="color" data-color="#fff" style="background-color: #fff"></li>' +
+                        '<li class="color" data-color="#eeece1" style="background-color: #eeece1"></li>' +
+                        '<li class="color" data-color="#595959" style="background-color: #595959"></li>' +
+                        '<li class="color" data-color="#000000" style="background-color: #000000"></li>' +
+                        '<li class="color" data-color="#262626" style="background-color: #262626"></li>' +
+                        '<li class="color" data-color="#1f497d" style="background-color: #1f497d"></li>' +
+                        '<li class="color" data-color="#4f81bd" style="background-color: #4f81bd"></li>' +
+                        '<li class="color" data-color="#c0504d" style="background-color: #c0504d"></li>' +
+                        '<li class="color" data-color="#9bbb59" style="background-color: #9bbb59"></li>' +
+                        '<li class="color" data-color="#8064a2" style="background-color: #8064a2"></li>' +
+                        '<li class="color" data-color="#4bacc6" style="background-color: #4bacc6"></li>' +
+                        '<li class="color" data-color="#f79646" style="background-color: #f79646"></li>' +
                     '</ul>'
         },
         'insertOrderedList': {

@@ -14,6 +14,7 @@ var express = require('express')
     , io = require('socket.io')
     , connect = require('connect')
     , crypto = require('crypto')
+    , utilHelpers = require('./lib/util/helpers')
     , csrf = require('express-csrf')
     , MemoryStore = express.session.MemoryStore
     , sessionStore = new MemoryStore()
@@ -115,6 +116,13 @@ app.get('/session/profile', function(req, res) {
             layout: false
         });
     }
+});
+
+app.get('/user/preferences', function(req, res) {
+    res.render('preferences', {
+        user: req.session.user || { theme: 'default' },
+        layout: false
+    });
 });
 
 app.get('/about', function(req, res) {
@@ -219,7 +227,7 @@ io.sockets.on('connection', function(socket){
         if(session.user){ // user is already logged in;
             note.userId = session.user.id;
             noteService.save(note, function(err, savedNote){
-                 if(savedNote){
+                if(savedNote){
                     session.note = savedNote;
                     session.save();
                 }
@@ -253,34 +261,22 @@ io.sockets.on('connection', function(socket){
     });
 
     // User create or update
-    socket.on('user/save', function(data, fn){
-        var onsave = function(err, user){
+    socket.on('user/save', function(user, fn){
+
+        var updateUser = session.user ? session.user.apply(user) : user; // update current user, or new user
+        
+        // TODO: better validate method
+        if(!updateUser.username) return fn('Invalid User');
+        
+        userService.save(updateUser, function(err, user){
             if (user) { // valid user, set session user
                 session.user = user;
                 session.save();
             }
             fn.apply(null, arguments);
-        };
-        
-        if(session.user){ // user is already logged in
-            var currentUser = session.user;
-            currentUser.firstName = data.firstName;
-            currentUser.lastName = data.lastName;
-            currentUser.email = data.email;
-            currentUser.passwordHashed = true;
-            currentUser.save(onsave);
-            
-            
-            // TODO: check for unique email
-        }
-        else{
-            Model('User')
-                .create(data)
-                .save(onsave);
-        }
+        });
     });
-
-
+    
     socket.on('user/exists', userService.exists);
 });
 

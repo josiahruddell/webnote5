@@ -1,0 +1,55 @@
+html {
+  background: #000 url("/images/backgrounds/darl-laced.jpg") 0 0 !important;
+}
+body .box4 {
+  color: #f8f8f2;
+  background: #222;
+  background: -webkit-gradient(linear, 0% 20%, 0% 100%, from(#222), to(#282828), color-stop(0.2, #282828));
+  background: -moz-linear-gradient(0% 0% 360deg, #222, #000 20%, #282828);
+  border: 1px solid #1e1e1e;
+}
+body #nav {
+  background: rgba(46,46,46,0.90);
+  border: 1px solid #1e1e1e;
+}
+body #bar {
+  background: rgba(46,46,46,0.90);
+  background: -moz-linear-gradient(top, rgba(46,46,46,0.90) 0%, rgba(56,56,56,0.90) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(46,46,46,0.90)), color-stop(100%, rgba(56,56,56,0.90)));
+  text-shadow: 0 1px 0 #000;
+  border-bottom: 1px solid #2e2e2e;
+}
+body #nav * {
+  color: #b6b6b6;
+}
+body #nav ul > li {
+  text-shadow: #000 0 1px 0;
+}
+body #nav ul > li a {
+  color: #b6b6b6;
+}
+body #bar li a,
+body #bar span {
+  color: #b6b6b6;
+}
+.active2 {
+  background: -moz-linear-gradient(top, #424242 0%, #4f4f4f 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #424242), color-stop(100%, #4f4f4f));
+}
+body #bar a.active,
+body #bar .active .text,
+body #nav ul li.active,
+body .menu-window,
+body .menu-list li:hover {
+  background: #424242;
+  background: -moz-linear-gradient(top, #424242 0%, #4f4f4f 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #424242), color-stop(100%, #4f4f4f));
+  color: #fff;
+  text-shadow: 0 1px 0 #000;
+}
+body .menu-list {
+  background: rgba(255,255,255,0.80);
+}
+body .window {
+  background: rgba(238,238,238,0.90);
+}

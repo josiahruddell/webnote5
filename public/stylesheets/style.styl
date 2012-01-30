@@ -62,7 +62,8 @@ h1 sup,sub
   width 180px
   position fixed
   height: 100%
-  background #eeeeee //#dee3e8 // #dee4ea
+  background rgba(238, 238, 238, .85)
+  // background #eeeeee //#dee3e8 // #dee4ea
   // display none
   //background #555 //#E5E5E5
   //background -webkit-gradient(linear, left top, right top, color-stop(0%,#555), color-stop(100%,#666))//#e7edf0
@@ -84,13 +85,17 @@ h1 sup,sub
   background Transparent
   z-index 50
 
+
+// rgba(196, 196, 196, .85) is C4C4C4
+// rgba(229, 229, 229, .85) is E5E5E5
+
 #bar
   position relative
-  opacity .85
+  //opacpity .85
+  background rgba(229, 229, 229, .85) // #E5E5E5, 
   z-index 99
-  background #E5E5E5
-  background -moz-linear-gradient(top, #E5E5E5 0%, #C4C4C4 100%)
-  background -webkit-gradient(linear, left top, left bottom, color-stop(0%,#E5E5E5), color-stop(100%,#C4C4C4))
+  background -moz-linear-gradient(top, rgba(229, 229, 229, .85) 0%, rgba(196, 196, 196, .85) 100%)
+  background -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(229, 229, 229, .85)), color-stop(100%,rgba(196, 196, 196, .85)))
   text-shadow 0 1px 0 #fff
   // filter progid:DXImageTransform.Microsoft.gradient(startColorstr='#E5E5E5', endColorstr='#C4C4C4',GradientType=0)
   border-bottom 1px solid #757575
@@ -305,10 +310,10 @@ img.gravatar
 
 .menu-list
   z-index 98
-  opacity .95
+  //opacity .95
   width 200px
   position fixed
-  background #fff
+  background rgba(255, 255, 255, .95)
   border 1px solid #CCC
   border-top none
   border-bottom-left-radius 4px
@@ -401,6 +406,9 @@ section .page ol li
   cursor default !important
   position relative
 
+.oneformat ul li:first-child
+  border-left none
+
 .oneformat ul li .icon
   top 1px
 
@@ -409,7 +417,7 @@ section .page ol li
   bottom 20px
   left 0
   height 48px
-  width 25px
+  width 36px
   padding 1px 1px 1px 0
 
 .oneformat .sub-toolbar .color
