@@ -14,7 +14,8 @@ define([
     'class/OneEdit/OneEdit', 
     'lib/spin.js/spin', 
     'lib/jquery/Plugins/jquery.validate.min',
-    'lib/jquery/Plugins/jquery.hotkeys'
+    'lib/jquery/Plugins/jquery.hotkeys',
+    'lib/jquery/Plugins/jquery.history'
 ], 
 function($, MenuItem, OneEdit){
     $.fn.oneEdit = function(options){
@@ -68,6 +69,28 @@ function($, MenuItem, OneEdit){
         return o;
     };
 
+    $(window).on('statechange', function(){
+        var state = History.getState(),
+            command = state.data.command;
+        
+        //console.log('statechange', state)
+        
+        if(command == 'openwindow'){
+            var o = $.extend(state.data.opts || {}, {
+                url: state.cleanUrl,
+                history: true
+            });
+            
+            $(state.data.el || '<div />').window(o);
+        }
+        else if(command == 'closewindow'){
+            $('div.window').each(function(){
+                var win = $(this).data('window');
+                if(win) win.destroy(); // close all?
+            });
+        }
+    })
+
     // var $divinput = $('div.input'),
     //         $fakeinput = $('#fake').bind('keypress.divinput', function(e){
     //             console.log('keydown');
@@ -104,18 +127,23 @@ function($, MenuItem, OneEdit){
         // TODO: move out of global ns
         // constructor
         var Window = function(el, opts){
-            Window.closeAll();
-            this.el = $(el);
+            Window.closeAll(opts.history);
+            this.el = $(el).attr('id', opts.id || new Date().getTime());
             $.extend(this, opts);
             this.load();
         };
         Window.items = [];
-        Window.closeAll = function(){
+        Window.closeAll = function(pushNext){
+            // console.log('closing all windows from constructor: %s', constructor);
+            // if pushNext is true do not invoke the history to close the modal
             for (var i = 0; i < Window.items.length; i++){
-                Window.items[i].destroy();
-                Window.items = Window.items.splice(i + 1, 1);
+                // don't
+                Window.items[i].beginClose(pushNext);
+                delete Window.items[i];
             }
-        }
+
+            Window.items = [];
+        };
         // global events
         $(document).bind('click', function(){ Window.closeAll(); });
 
@@ -169,6 +197,17 @@ function($, MenuItem, OneEdit){
                     w = this.el.width();
                 this.el.css('left', winW/2 - w/2);
             },
+            beginClose: function(pushNext){
+                if(this.history && !pushNext){
+                    History.pushState({ 
+                        command: 'closewindow', 
+                        el: '#' + this.el.attr('id') 
+                    }, null, '/');
+                }
+                else{
+                    this.destroy();
+                }
+            },
             destroy: function(){
                 this.el.fadeOut('fast', function(){ $(this).remove(); })  
             },
@@ -185,3 +224,15 @@ function($, MenuItem, OneEdit){
         }
     })(jQuery, this);
 });
+
+(function(){
+    // remove layerX and layerY
+    var all = $.event.props,
+        len = all.length,
+        res = [];
+    while (len--) {
+      var el = all[len];
+      if (el != 'layerX' && el != 'layerY') res.push(el);
+    }
+    $.event.props = res;
+}());

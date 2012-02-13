@@ -3,8 +3,7 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
-    - if(current_user && current_user.theme && (current_user.theme !== 'default'))
-      link(rel='stylesheet', id="current-theme-style", href='/stylesheets/themes/' + current_user.theme + '.css')
+    link(rel='stylesheet', id="user_css", href='/user.css')
     link(rel='stylesheet', href='/stylesheets/box.css')
     link(rel='stylesheet', href='/stylesheets/button.css')
     script(src="/javascripts/lib/requirejs/require-jquery.js", data-main="javascripts/main")

@@ -96,7 +96,7 @@ function($){
             this.cache = {
                 'mousemove.doc': { el: document, fn: $.proxy(self.opacityInterest, self) },
                 'mouseup.doc': { el: document, fn: $.proxy(self.close, self) },
-                'mouseup.body': { el: document.body, fn: $.proxy(self.open, self) },
+                'mouseup.el': { el: this.el, fn: $.proxy(self.open, self) },
                 'keydown.el': { el: this.el, fn: $.proxy(self.checkKeySelect, self) }
             };
             this._build();

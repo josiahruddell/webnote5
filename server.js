@@ -18,6 +18,8 @@ var express = require('express')
     , csrf = require('express-csrf')
     , MemoryStore = express.session.MemoryStore
     , sessionStore = new MemoryStore()
+    , stylus = require('stylus')
+    , fs = require('fs')
     , port = process.argv[2] || process.env.C9_PORT || 80;
 
 
@@ -109,6 +111,39 @@ app.get('/', function(req, res) {
     });
 });
 
+
+// combines background and theme css into user.css request
+app.get("/user.css", function(req, res) {
+    res.header("Content-type", "text/css");
+    
+    var user = req.session.user || req.session.prefs,
+        bgPath = __dirname + '/public/stylesheets/background.styl',
+        bgFile = fs.readFileSync(bgPath, 'utf8');
+
+    stylus.render(bgFile, { filename: 'background.css' }, function(err, css){
+      if (err) throw err; 
+      if(user){
+        var matches = css.match(/url\((.+?)\)/);
+        var newCss = css.replace(matches[1], user.background);
+        res.write(newCss);
+      }
+      else // always render a background
+        res.write(css);
+    });
+
+    // only render theme if not default
+    if(user && user.theme !== 'default'){
+        var themePath = __dirname + '/public/stylesheets/themes/' + user.theme +'.styl';
+        var themeFile = fs.readFileSync(themePath, 'utf8');
+        stylus.render(themeFile, { filename: user.theme + '.css' }, function(err, css){
+          if (err) throw err; 
+            res.write(css);
+        });
+    }
+    
+    res.end();
+});
+
 app.get('/session/profile', function(req, res) {
     if(req.session.user){
         res.render('profile', {
@@ -118,9 +153,23 @@ app.get('/session/profile', function(req, res) {
     }
 });
 
-app.get('/user/preferences', function(req, res) {
-    res.render('preferences', {
-        user: req.session.user || { theme: 'default' },
+app.get('/preferences', function(req, res) {
+    res.render('preferences/index', {
+        user: req.session.user || req.session.prefs || Model('User').create({}),
+        layout: false
+    });
+});
+
+app.get('/preferences/themes', function(req, res) {
+    res.render('preferences/themes', {
+        user: req.session.user || req.session.prefs || Model('User').create({}),
+        layout: false
+    });
+});
+
+app.get('/preferences/backgrounds', function(req, res) {
+    res.render('preferences/backgrounds', {
+        user: req.session.user || req.session.prefs || Model('User').create({}),
         layout: false
     });
 });
@@ -181,13 +230,30 @@ io.set('authorization', function (data, accept) {
        return accept('No cookie transmitted.', false);
     }
 });
+
+// activate service in each method?
 var noteService = require('./lib/services/NoteService'),
     userService = require('./lib/services/UserService');
 
 io.sockets.on('connection', function(socket){
     // Notes ...
     var hs = socket.handshake,
-        session = hs.session;
+        session = hs.session,
+        userSave = function(user, fn){
+            console.log('\t\t##', 'saving user', user);
+            var updateUser = session.user ? session.user.apply(user) : user; // update current user, or new user
+            
+            // TODO: better validate method
+            if(!updateUser.username) return fn('Invalid User');
+            
+            userService.save(updateUser, function(err, user){
+                if (user) { // valid user, set session user
+                    session.user = user;
+                    session.save();
+                }
+                fn.apply(null, arguments);
+            });
+        };
 
     console.log('A socket with hs.sessionID ' + hs.sessionID+ ' connected!');
 
@@ -245,6 +311,11 @@ io.sockets.on('connection', function(socket){
             
             if (user) { // valid user, set session user
                 session.user = user;
+                if(session.prefs){
+                    userSave.call(null, session.prefs, function(){
+                        console.log('##\t\tafter emit save in auth', arguments);
+                    });
+                }
                 session.save();
             }
             
@@ -255,27 +326,27 @@ io.sockets.on('connection', function(socket){
     socket.on('session/destroy', function(message, fn){
         session.user = null;
         session.note = null;
+        session.prefs = null;
         session.save();
         
         fn.apply(null);
     });
 
-    // User create or update
-    socket.on('user/save', function(user, fn){
-
-        var updateUser = session.user ? session.user.apply(user) : user; // update current user, or new user
-        
-        // TODO: better validate method
-        if(!updateUser.username) return fn('Invalid User');
-        
-        userService.save(updateUser, function(err, user){
-            if (user) { // valid user, set session user
-                session.user = user;
-                session.save();
-            }
-            fn.apply(null, arguments);
-        });
+    socket.on('preferences/update', function(prefs, fn){
+        if(session.user){
+            console.log('\t\t##', 'updating user preferences', prefs);
+            userSave.call(null, prefs, fn);
+        }
+        else{
+            var d = Model('User').create({});
+            session.prefs = (session.prefs || { background: d.background, theme: d.theme}).apply(prefs);
+            session.save();
+            fn.apply(null, [null, session.prefs]);
+        }
     });
+
+    // User create or update
+    socket.on('user/save', userSave);
     
     socket.on('user/exists', userService.exists);
 });

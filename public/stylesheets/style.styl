@@ -25,14 +25,7 @@ input:focus
 
 [contenteditable="true"]:focus
   outline none
-
-html
-  background #999 url(/images/backgrounds/Pinstripe-med.jpg) 0 0
-  // background #444 url(/images/backgrounds/blue-stripes.jpeg) 50px 0
-  //background #444 url(/images/backgrounds/funny-circles.jpeg) 0 0
-  background-attachment fixed
-  //background-size auto 100%
-
+  
 body
   font 77% "Lucida Grande", "Trebuchet MS", Georgia, serif
   overflow-x hidden
@@ -504,3 +497,37 @@ section .page ol li
 .window button
   margin-left 5px
 
+.window .header h2
+  text-align center
+
+.window .header .back
+  position absolute
+  top 0
+  left 0
+  margin 0
+
+
+.window .header a
+  margin-right 5px
+
+.drilldown li
+  float left
+  list-style none
+
+.drilldown li > .item
+  float left
+
+.drilldown .item-icon
+  float left
+  width 100px
+  margin 20px 30px 0 0
+  text-align center
+  padding 6px
+
+.drilldown .item-icon:hover
+  padding 5px
+  border 1px solid #ccc
+  border-radius 5px
+
+.drilldown .item-content
+  display none

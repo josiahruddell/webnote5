@@ -1,0 +1,120 @@
+style
+  .backgrounds { max-width: 450px; margin-top: 10px; }
+  .backgrounds li { float: left; list-style: none; margin: 0px 10px 10px 0; border-radius: 4px; }
+  .backgrounds a { display: block; width: 73px; height: 53px; border: 1px solid #777; padding: 2px; border-radius: 4px; }
+  .backgrounds li a:hover,
+  .backgrounds li.active a { border: 3px solid #1e6cb4; padding: 0px; }
+  .backgrounds a span { background: rgba(0, 0, 0, .4); color: #fff; display: inline-block; padding: 2px; font-size: 9px; text-align: center; border-radius: 2px; }
+  .backgrounds li.pattern-01 { background: url(/images/backgrounds/pattern/pattern_01.gif) 0 0 }
+  .backgrounds li.pattern-03 { background: url(/images/backgrounds/pattern/pattern_03.gif) 0 0 }
+  .backgrounds li.pattern-07 { background: url(/images/backgrounds/pattern/pattern_07.gif) 0 0 }
+  .backgrounds li.pattern-13 { background: url(/images/backgrounds/pattern/pattern_13.gif) 0 0 }
+  .backgrounds li.pattern-16 { background: url(/images/backgrounds/pattern/pattern_16.gif) 0 0 }
+  .backgrounds li.pattern-21 { background: url(/images/backgrounds/pattern/pattern_21.gif) 0 0 }
+  .backgrounds li.pattern-22 { background: url(/images/backgrounds/pattern/pattern_22.gif) 0 0 }
+  .backgrounds li.pattern-24 { background: url(/images/backgrounds/pattern/pattern_24.gif) 0 0 }
+  .backgrounds li.pattern-25 { background: url(/images/backgrounds/pattern/pattern_25.gif) 0 0 }
+  .backgrounds li.pattern-26 { background: url(/images/backgrounds/pattern/pattern_26.gif) 0 0 }
+  .backgrounds li.pattern-28 { background: url(/images/backgrounds/pattern/pattern_28.gif) 0 0 }
+  .backgrounds li.pattern-29 { background: url(/images/backgrounds/pattern/pattern_29.gif) 0 0 }
+  .backgrounds li.pattern-30 { background: url(/images/backgrounds/pattern/pattern_30.gif) 0 0 }
+  .backgrounds li.pattern-31 { background: url(/images/backgrounds/pattern/pattern_31.gif) 0 0 }
+  .backgrounds li.pattern-37 { background: url(/images/backgrounds/pattern/pattern_37.gif) 0 0 }
+  .backgrounds li.pattern-39 { background: url(/images/backgrounds/pattern/pattern_39.gif) 0 0 }
+  .backgrounds li.pattern-40 { background: url(/images/backgrounds/pattern/pattern_40.gif) 0 0 }
+  .backgrounds li.pattern-41 { background: url(/images/backgrounds/pattern/pattern_41.gif) 0 0 }
+  .backgrounds li.pattern-42 { background: url(/images/backgrounds/pattern/pattern_42.gif) 0 0 }
+  .backgrounds li.pattern-43 { background: url(/images/backgrounds/pattern/pattern_43.gif) 0 0 }
+div.header(style="width:450px")
+  button.back.minimal.small(href="#") Back
+  h2 Backgrounds
+div.window-body
+  div.item-content.backgrounds
+    ul
+      li.pattern-01
+        a(href="#")
+          span #1
+      li.pattern-03
+        a(href="#")
+          span #2
+      li.pattern-07
+        a(href="#")
+          span #3
+      li.pattern-13
+        a(href="#")
+          span #4
+      li.pattern-16
+        a(href="#")
+          span #5
+      li.pattern-21
+        a(href="#")
+          span #6
+      li.pattern-22
+        a(href="#")
+          span #7
+      li.pattern-24
+        a(href="#")
+          span #8
+      li.pattern-25
+        a(href="#")
+          span #9
+      li.pattern-26
+        a(href="#")
+          span #10
+      li.pattern-28
+        a(href="#")
+          span #11
+      li.pattern-29
+        a(href="#")
+          span #12
+      li.pattern-30
+        a(href="#")
+          span #13
+      li.pattern-31
+        a(href="#")
+          span #14
+      li.pattern-37
+        a(href="#")
+          span #15
+      li.pattern-39
+        a(href="#")
+          span #16
+      li.pattern-40
+        a(href="#")
+          span #17
+      li.pattern-41
+        a(href="#")
+          span #18
+      li.pattern-42
+        a(href="#")
+          span #19
+      li.pattern-43
+        a(href="#")
+          span #20
+script
+  require(['jquery', 'util/helpers', 'util/data'], function($, ui, data) {
+    $('div.header button.back').on('click', function(e){
+      History.back();
+      return false;
+    });
+
+    $('div.window-body div.backgrounds li').on('click', function(e){
+      var bg = $(this).addClass('active').siblings().removeClass('active').end().css('background-image'),
+        matches = bg.match(/url\\((.+?)\\)/),
+        path = matches[1].replace(location.origin, '');
+      
+      data.socket.emit('preferences/update', { background: path }, function(){
+        ui.applyTheme();
+      });
+
+      return false;
+    });
+  });
+
+
+
+
+
+
+
+

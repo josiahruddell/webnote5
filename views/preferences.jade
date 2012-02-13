@@ -1,11 +1,32 @@
-h2 Preferences
-div
-  form
-    p
-      label Theme
-      select(name="theme")
-        option(value="default", selected=('default'== user.theme)) Default
-        option(value="dark", selected=('dark'== user.theme)) Dark
-    p.alignright
-      button.minimal.cancel Cancel
-      button.minimal.primary.submit Save
+div.header
+  a(href="#", class="back") Back
+  a(href="#", class="forward") Forward
+  h2 Preferences
+div.window-body
+    ul.drilldown
+      li
+        h3 Display
+        div.item
+          div.item-icon(data-content="/preferences/backgrounds")
+            h4 Backgrounds
+            div.icon-backgrounds
+          div.item-content
+            ul
+              li
+                a BG1
+              li
+                a BG2
+        div.item
+          div.item-icon(data-content="/preferences/themes")
+            h4 Themes
+            div.icon-themes
+          div.item-content
+            p
+              label Theme
+              select(name="theme")
+                option(value="default", selected=('default'== user.theme)) Default
+                option(value="dark", selected=('dark'== user.theme)) Dark
+script
+  $('.window .drilldown .item-icon').on('click', function(){
+    $(this).hide().next('.item-content').show();
+  });

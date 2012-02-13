@@ -1,0 +1,20 @@
+div.header(style="width:450px")
+  h2 Preferences
+div.window-body
+    ul.drilldown
+      li
+        h3 Display
+        div.item
+          div.item-icon(data-url="/preferences/backgrounds")
+            h4 Backgrounds
+            div.icon-backgrounds
+        div.item
+          div.item-icon(data-url="/preferences/themes")
+            h4 Themes
+            div.icon-themes
+script
+  $('.window .drilldown .item-icon').on('click', function(e){
+    var url = $(this).data('url');
+    History.pushState({ command: 'openwindow' }, null, url);
+    return false;
+  });

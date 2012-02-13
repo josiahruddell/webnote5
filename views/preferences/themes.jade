@@ -1,0 +1,28 @@
+div.header(style="width:450px")
+  button.back.minimal.small(href="#") Back
+  h2 Themes
+div.window-body
+  div.item-content
+    p
+      label Theme
+      select#theme(name="theme")
+        option(value="default", selected=('default'== user.theme)) Default
+        option(value="dark", selected=('dark'== user.theme)) Dark
+
+script
+  require(['jquery', 'util/helpers', 'util/data'], function($, ui, data) {
+    $('div.header button.back').on('click', function(e){
+      History.back();
+      return false;
+    });
+
+    $('#theme').on('change', function(){
+      var val = $(this).val();
+      data.socket.emit('preferences/update', { theme: val }, function(){
+        ui.applyTheme();
+      });
+      return false;
+    });
+  });
+
+

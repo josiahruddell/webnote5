@@ -11,128 +11,31 @@ ____________________________________________
 
 require([
     'jquery', 
-    'class/MenuItem/MenuItem', 
-    'lib/socket.io/socket.io.min', 
+    'util/helpers',
+    'util/data',
+    'class/MenuItem/MenuItem',
     'util/extensions'
 ],
-function($, MenuItem) {
+function($, ui, data, MenuItem) {
     $(function() {
-        var socket = io.connect(null, {
-            reconnect: true,
-            transports: [/*'websocket',*/'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling'] //websocket is not working with joyent hosting
-        }),
-            storage = sessionStorage || localStorage,
+        // alias
+        var socket = data.socket,
+            storage = data.storage,
             offline = false,
             currentNote;
         // one edit
-        $('#bodytext').oneEdit();
+        $('div.page').oneEdit();
 
-        // TODO: move to templates, or use orm
-        function applyNote(note, saveLocal){
-            currentNote = note;
-            $('div#bodytext').html(note.body);
-            $('#titletext').html(note.title);
-            $('#datetext').html(note.date);
-            $('#timetext').html(note.time);
-            $('#current-note-id').val(note.id);
-            
-            if(saveLocal) 
-                storage['currentNote'] = JSON.stringify(note);
-
-            markActiveNote(note.id);
-            
-        }
-
-        function applyTheme(theme){
-            if(theme == 'default'){
-                $('head link[id]').remove();
-            }
-            else{
-                $('head link[id]').remove();
-                $('head').prepend('<link rel="stylesheet" id="current-theme-style" href="/stylesheets/themes/' + theme + '.css" />');
-            }
-        }
-
-        function markActiveNote(id){
-            id = id || currentNote.id;
-            var li = $('#notelist li[data-id="' + id + '"]');
-            if(li.length)
-                li.addClass('active').siblings().removeClass('active');
-        }
-
-        function getNote(){
-            var note = {
-                body: $('div#bodytext').html(),
-                title: $('#titletext').html(),
-                date: $('#datetext').html(),
-                time: $('#timetext').html()
-            };
-            
-            var id = $('#current-note-id').val();
-            if(id)
-                note.id = id;
-            return note;
-        }
-
-        function resetNote(){
-            var newNote = {
-                body: 'Click to Edit',
-                title: 'New Title'
-            };
-            $('#notelist li.active').removeClass('active');
-            applyNote(newNote);
-        }
-        
-        function loadNoteList(){
-            socket.emit('note/titles', {}, function(err, notes){
-                console.log(notes);
-                var list = $('#notelist').empty(), cls;
-                for(var i = 0; i < notes.length; i++){
-                    cls = (currentNote && currentNote.id) == notes[i].id ? 'active' : '';
-                    list.append('<li class="' + cls + '" data-id="' + notes[i].id + '"><a class="del">x</a>' + notes[i].title + '</li>');
-                }
-            });
-        }
-
-        function saveNote(){
-            console.log('save');
-            var note = getNote();
-            var win = $('<div />').window({ html: '<span class="text">Saving...</span>' });
-            socket.emit('note/save', note, function(err, note){
-                // ... success then update html and close
-                console.log('done save note', arguments); 
-                storage['currentNote'] = JSON.stringify(note);
-                // save id
-                $('#current-note-id').val(note.id);
-
-                // update list
-                var exists = $('#notelist li[data-id="' + note.id + '"]');
-                if(exists.length) exists.html('<a class="del">x</a>' + note.title);
-                else $('#notelist').prepend('<li data-id="' + note.id + '"><a class="del">x</a>' + note.title + '</li>');
-
-                markActiveNote(note.id);
-                win.data('window') && win.data('window').destroy();
-            });
-        }
-        var saveTimeoutId;
-        function saveDelayed(ms){
-            if(saveTimeoutId) clearTimeout(saveTimeoutId);
-            
-            saveTimeoutId = setTimeout(function(){
-                saveNote();
-            }, ms);
-        }
-        
-        loadNoteList();
+        ui.loadNoteList();
 
         if(storage['currentNote']){
-            applyNote(JSON.parse(storage['currentNote'], true));
+            ui.applyNote(JSON.parse(storage['currentNote'], true));
         }
         $('.data-field').bind('focus', function() {
             var $this = $(this);
             $this.data('before', $this.html());
             return $this;
-        }).bind('blur keyup paste', function() {
+        }).bind('blur keyup paste', function() { /// meh, no likey
             var $this = $(this);
             if ($this.data('before') !== $this.html()) {
                 $this.data('before', $this.html());
@@ -140,7 +43,7 @@ function($, MenuItem) {
             }
             return $this;
         }).bind('change', function(){
-            saveDelayed(7000);
+            ui.saveDelayed(7000);
         });
 
         $('#notelist').delegate('li', 'click', function(e){
@@ -149,7 +52,7 @@ function($, MenuItem) {
             var li = $(this),
                 win = $('<div />').window({ html: '<span class="text">Loading...</span>' });
             socket.emit('note/find', $(this).attr('data-id'), function(err, note){
-                applyNote(note);
+                ui.applyNote(note);
                 console.log('applied note, closing window');
                 win.data('window') && win.data('window').destroy();
             });
@@ -189,27 +92,10 @@ function($, MenuItem) {
                 note5: function(e){
                     switch($.trim($(this).html())){
                         case 'About NomNotes':
-                            $('<div />').window({ url: '/about' });
+                            History.pushState({ command: 'openwindow' }, null, '/about');
                         break;
                         case 'Preferences...':
-                            $('<div />').window({ 
-                                url: '/user/preferences', 
-                                submit: function(e, form){
-                                    var self = this;
-                                    e.preventDefault();
-                                    var data = $(form).serializeObject();
-                                    console.log('save theme', data); 
-                                    socket.emit('user/save', data, function(err, user){
-                                        console.log('done save user', arguments); 
-                                        self.destroy(); // modal close
-                                    });
-                                },
-                                beforeShow: function(){
-                                    this.inner.find('select').change(function(){
-                                        applyTheme($(this).val());
-                                    });
-                                } 
-                            });
+                            History.pushState({ command: 'openwindow' }, null, '/preferences');
                         break;
                     }
                     MenuItem.hideAll(e);
@@ -226,10 +112,10 @@ function($, MenuItem) {
                 },
                 file: function(e){
                     if($.trim($(this).html()) == 'New'){
-                        resetNote();
+                        ui.resetNote();
                     }
                     else if($.trim($(this).html()) == 'Save'){
-                        saveNote();
+                        ui.saveNote();
                     }
                     MenuItem.hideAll(e);
                 }
@@ -318,9 +204,9 @@ function($, MenuItem) {
                 $signedIn.hide();
                 $form.show().find('input:first').focus();
                 delete storage['currentNote'];
-                resetNote();
+                ui.resetNote();
                 $('#notelist').empty();
-                $('head link[id]').remove();
+                ui.applyTheme();
             });
             e.preventDefault();
         });
@@ -370,14 +256,13 @@ function($, MenuItem) {
                         $signedIn.show();
                         // delay the hide and slow it down
                         setTimeout(function(){ MenuItem.hideAll(e, 400); }, 1200);
-                        loadNoteList();
-                        applyTheme(user.theme || 'default');
+                        ui.loadNoteList();
+                        ui.applyTheme(user.theme || 'default');
                     }
                     else { console.log(route, err); }
                 });
             }
             e.preventDefault();
         });
-
     });
 });
