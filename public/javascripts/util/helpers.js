@@ -5,7 +5,7 @@ define(['jquery', 'util/data'], function($, data){
         getCurrentNote: function(){ return currentNote },
         applyTheme: function(theme){
             $('head link[id]').remove();
-            $('head').prepend('<link rel="stylesheet" id="user_css" href="/user.css" />');    
+            $('head').prepend('<link rel="stylesheet" id="user_css" href="/user.css?no_cache=' + (new Date).getTime() + '" />');    
         },
         applyNote: function(note, saveLocal){
             currentNote = note;
