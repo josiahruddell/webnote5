@@ -14,7 +14,7 @@ var express = require('express')
     , io = require('socket.io')
     , connect = require('connect')
     , crypto = require('crypto')
-    , utilHelpers = require('./lib/util/helpers')
+    , utilHelpers = require('./src/util/helpers')
     , csrf = require('express-csrf')
     , MemoryStore = express.session.MemoryStore
     , sessionStore = new MemoryStore()
@@ -72,7 +72,7 @@ app.configure(function() {
         }
         // secure:true,
     });
-    Model.load('lib/models');
+    Model.load('src/models');
 });
 
 app.configure('development', function() {
@@ -232,8 +232,8 @@ io.set('authorization', function (data, accept) {
 });
 
 // activate service in each method?
-var noteService = require('./lib/services/NoteService'),
-    userService = require('./lib/services/UserService');
+var noteService = require('./src/services/NoteService'),
+    userService = require('./src/services/UserService');
 
 io.sockets.on('connection', function(socket){
     // Notes ...

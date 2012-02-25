@@ -30,7 +30,7 @@ function($){
         },
         saveSelection: function () {
             if (window.getSelection) {
-                sel = window.getSelection();
+                var sel = window.getSelection();
                 if (sel.getRangeAt && sel.rangeCount) {
                     return sel.getRangeAt(0);
                 }
@@ -42,12 +42,29 @@ function($){
         restoreSelection: function (range) {
             if (range) {
                 if (window.getSelection) {
-                    sel = window.getSelection();
+                    var sel = window.getSelection();
                     sel.removeAllRanges();
                     sel.addRange(range);
                 } else if (document.selection && range.select) {
                     range.select();
                 }
+            }
+        },
+        // http://stackoverflow.com/a/987376/39013
+        selectElement: function(element) {
+            var doc = document;
+            var text = element;//doc.getElementById(element);    
+
+            if (doc.body.createTextRange) { // ms
+                var range = doc.body.createTextRange();
+                range.moveToElementText(text);
+                range.select();
+            } else if (window.getSelection) { // moz, opera, webkit
+                var selection = window.getSelection();            
+                var range = doc.createRange();
+                range.selectNodeContents(text);
+                selection.removeAllRanges();
+                selection.addRange(range);
             }
         }
     };
@@ -303,23 +320,39 @@ function($){
                 '<div class="icon icon-increase-font">' +
                     '<div class="icon-increase-font-text">A</div>' +
                     '<div class="icon-increase-font-arrow"></div>' +
-                '</div>',
-            action: function(e, fn){
-                e.preventDefault();
-                e.stopPropagation();
-                var sel = SelectionHelper.saveSelection();
-                var allText = $(sel.startContainer).text();
-                var startText = allText.substring(0, sel.startOffset);
-                var selectedText = allText.substring(sel.startOffset, sel.endOffset);
-                var endText = allText.substring(sel.endOffset);
+                '</div>'
+            // action: function(e, fn){
+            //     e.preventDefault();
+            //     e.stopPropagation();
+            //     debugger;
+            //     var sel = SelectionHelper.saveSelection();
+            //     if(sel.endContainer == sel.startContainer){
+            //         var t = $(sel.endContainer).text();
+            //         t = t.substring(0, sel.endOffset)
+            //         var newT = $('<font style="font-size: 110%">'+ t +'</font>');
+                    
+            //         $(sel.endContainer).replaceWith(newT);
+            //         SelectionHelper.selectElement(newT[0]);
+            //     }
+            //     else{
+            //         var allText = sel.startContainer.wholeText || $(sel.startContainer).text();
 
-                var formatted = $('<font style="font-size: 110%" />').append(selectedText);
-                var wrap = $('<span />')
-                    .append(startText)
-                    .append(formatted)
-                    .append(endText);
-                $(sel.startContainer).replaceWith(wrap);
-            }
+            //         var startText = allText.substring(0, sel.startOffset);
+            //         var selectedText = allText.substring(sel.startOffset, sel.endOffset);
+            //         var endText = allText.substring(sel.endOffset);
+
+            //         var formatted = $('<font style="font-size: 110%" />').append(selectedText);
+            //         var wrap = $('<span />')
+            //             .append(startText)
+            //             .append(formatted)
+            //             .append(endText);
+            //         $(sel.startContainer).replaceWith(wrap);
+            //         SelectionHelper.selectElement(wrap[0]);
+            //     }
+
+                
+                
+            // }
             
         },
         'decreaseFontSize': {

@@ -56,8 +56,9 @@ define(['jquery', 'util/data'], function($, data){
             });
         },
         saveNote: function(){
-            var note = this.getNote();
-            var win = $('.window').length == 0 ? $('<div />').window({ html: '<span class="text">Saving...</span>' }) : null;
+            var self = this,
+                note = this.getNote(),
+                win = $('.window').length == 0 ? $('<div />').window({ html: '<span class="text">Saving...</span>' }) : null;
             data.socket.emit('note/save', note, function(err, note){
                 // ... success then update html and close
                 console.log('done save note', arguments); 
@@ -70,7 +71,7 @@ define(['jquery', 'util/data'], function($, data){
                 if(exists.length) exists.html('<a class="del">x</a>' + note.title);
                 else $('#notelist').prepend('<li data-id="' + note.id + '"><a class="del">x</a>' + note.title + '</li>');
 
-                this.markActiveNote(note.id);
+                self.markActiveNote(note.id);
                 if(win) win.data('window') && win.data('window').destroy();
             });
         },
